@@ -4,8 +4,10 @@
     }" @click="goToGame">
 
         <div v-if="disabled"
-            class="absolute z-50 p-2 px-4 text-white -translate-x-1/2 -translate-y-1/2 bg-gray-800 rounded-full top-1/2 left-1/2">
+            class="absolute z-50 flex flex-col p-2 px-4 space-y-2 text-center text-white -translate-x-1/2 -translate-y-1/2 bg-gray-800 rounded-3xl top-1/2 left-1/2">
             <span class="text-xl font-semibold">Coming Soon</span>
+
+            <span v-if="extraComingSoonText.length" class="text-sm">{{ extraComingSoonText }}</span>
         </div>
 
         <div class="relative">
@@ -25,6 +27,7 @@ export default {
         'game',
         'image',
         'disabled',
+        'extraComingSoonText',
     ],
 
     data: () => ({
