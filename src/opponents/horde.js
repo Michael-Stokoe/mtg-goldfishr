@@ -140,6 +140,7 @@ export default class Horde extends Opponent {
             <li>When the Horde plays a sorcery, the card will appear on screen for a short time, and apply any of its effects to the Minotaurs.</li>
             <li>Attacking the Horde on your turn will put the top X cards of the Horde's library into its graveyard, X being the amount of damage dealt.</li>
             <li>The Horde has infinite mana, and you should assume all costs will be paid (Smothering Tithe, Rhystic Study, etc.).</li>
+            <li>The Horde will ignore any effects that are impossible for it to perform, such as drawing or discarding cards.</li>
         `;
     }
 }
