@@ -1,53 +1,21 @@
-import hordeDecklist from './decklists/horde.json';
+import decklist from '../decklists/horde.json';
+import Opponent from '../classes/opponent.js';
+import Card from '../classes/card.js';
 
-export class Game {
-    title = null;
-    currentTurn = null;
-    currentPhase = null;
-    decklist = null;
-
-    phases = [
-        'untap',
-        'upkeep',
-        'draw',
-        'main1',
-        'combat',
-        'main2',
-        'end',
-    ];
-    
-    constructor (type) {
-        this.setTitle(type);
-        this.getDecklist(type);
+export default class Horde extends Opponent {
+    constructor () {
+        super();
     }
 
-    setTitle (game) {
-        switch (game) {
-            case 'minotaur':
-                this.title = 'Battle the Horde';
-                break;
-            case 'hydra':
-                this.title = 'Face the Hydra';
-                break;
-            default:
-                this.title = 'Unknown Game';
-                throw new Error('Unknown game type');
-                break;
-        }
-    }
-
-    getDecklist (game) {
-        let library = [];
-        
-        let decklist = hordeDecklist;
-
-        decklist.forEach((card) => {
+    setDecklist () {
+        let self = this;
+        decklist.forEach(function (card) {
             for (var i = 0; i < card.count; i++) {
                 let newCard = new Card(card.name, card.superTypes, card.subTypes, 0);
 
-                this.applyCardHandlers(newCard);
+                self.applyCardHandlers(newCard);
 
-                library.push(newCard);
+                self.library.push(newCard);
             }
         });
     }
@@ -160,56 +128,4 @@ export class Game {
             }
         }
     }
-}
-
-export class Card {
-    name = null;
-    superTypes = [];
-    subTypes = [];
-    manaCost = null;
-    tapped = false;
-
-    handlers = {
-        untap: null,
-        upkeep: null,
-        draw: null,
-        main1: null,
-        combat: {
-            beginning: null,
-            declareAttackers: null,
-            declareBlockers: null,
-            combatDamage: null,
-            end: null,
-        },
-        main2: null,
-        end: null,
-
-        attack: null,
-        enterTheBattlefield: null,
-        leaveTheBattlefield: null,
-        blocked: null,
-        cast: null,
-        death: null,
-        tap: null,
-        upkeep: null,
-        preCombatMainPhase: null,
-        postCombatMainPhase: null,
-        endStep: null,
-    }
-
-    constructor (name, superTypes, subTypes, manaCost) {
-        this.name = name;
-        this.superTypes = superTypes;
-        this.subTypes = subTypes;
-        this.manaCost = manaCost;
-    }
-
-    kill () {
-        // send card to graveyard
-    }
-}
-
-export default {
-    Game,
-    Card,
 }

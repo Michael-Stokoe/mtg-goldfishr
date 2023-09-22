@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { Game } from '../classes.js';
+import Game from '../classes/game.js';
 
 export default {
     name: "GamePage",
