@@ -1,7 +1,16 @@
-# Vue 3 + Vite
+# Goldfishr
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Goldfishr helps you test your Magic: The Gathering decks by providing an opponent which will handle its own turns.
 
-## Recommended IDE Setup
+Some interaction is required in order to advance the opponent's phases, but it will cast its own spells, tap its creatures to attack.
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+Goldfishr has a built-in life counter which can automatically subtract life if Goldfishr's creatures aren't marked as blocked.
+
+# Features
+
+- Life counter with automatic subtraction for unblocked creatures
+- Multiple challenge decks to play against
+- Mostly automated handling of its own turns
+- Block creatures, tap them down, destroy permanents, exile them
+- Show current turn number, opponent library size (remaining life)
+- more to come...

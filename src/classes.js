@@ -66,7 +66,7 @@ export class Game {
         }
 
         if (card.name === 'Consuming Rage') {
-            card.onCast = function () {
+            card.handlers.cast = function () {
                 // whenever a minotaur attacks this turn,
                 // it gets +2/+0 until end of turn.
                 // destroy that creature at the end of combat.
@@ -74,28 +74,28 @@ export class Game {
         }
 
         if (card.name === 'Descend on the Prey') {
-            card.onCast = function () {
+            card.handlers.cast = function () {
                 // Whenever a minotaur attacks this turn, it gains
                 // first strike and must be block this turn if able.
             }
         }
 
         if (card.name === 'Intervention of Keranos') {
-            card.onCast = function () {
+            card.handlers.cast = function () {
                 // At the beginning of combat this turn,
                 // Intervention of Keranos deals 3 damage to each creature.
             }
         }
 
         if (card.name === 'Touch of the Horned God') {
-            card.onCast = function () {
+            card.handlers.cast = function () {
                 // Whenever a minotaur attacks this turn, it gains
                 // deathtouch until end of turn.
             }
         }
 
         if (card.name === 'Unquenchable Fury') {
-            card.onCast = function () {
+            card.handlers.cast = function () {
                 // Each Minotaur can't be blocked this turn except by two or more creatures.
             }
         }
@@ -107,7 +107,7 @@ export class Game {
                 // The horde casts that card.
             }
 
-            card.onDeath = function () {
+            card.handlers.death = function () {
                 // The horde sacrifices two Minotaurs.
             }
         }
@@ -119,7 +119,7 @@ export class Game {
                 // The horde casts that card.
             }
 
-            card.onDeath = function () {
+            card.handlers.death = function () {
                 // The horde mills 7 cards
             }
         }
@@ -131,7 +131,7 @@ export class Game {
                 // The horde casts that card.
             }
 
-            card.onDeath = function () {
+            card.handlers.death = function () {
                 // Each player draws a card
             }
         }
@@ -143,7 +143,7 @@ export class Game {
                 // The horde casts that card.
             }
 
-            card.onDeath = function () {
+            card.handlers.death = function () {
                 // Each player gains 5 life.
             }
         }
@@ -155,7 +155,7 @@ export class Game {
                 // The horde casts that card.
             }
 
-            card.onDeath = function () {
+            card.handlers.death = function () {
                 // Each player returns a creature card from their graveyard to the battlefield.
             }
         }
