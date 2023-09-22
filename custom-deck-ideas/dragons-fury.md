@@ -17,16 +17,16 @@
 **Dragon Minions (x15)**
 - Creature — Dragon Minion
 - Flying, Haste
-- When Dragon Minion enters the battlefield, it deals 2 damage to each player unless its controller spends 1 Fury Counter.
+- When Dragon Minion enters the battlefield, it deals 2 damage to each player.
 - **Toughness:** 3
 
 **Raging Inferno (x4)**
 - Sorcery
-- The Dragon deals 4 damage to each player. If the Dragon has 6 or more Fury Counters, it deals an additional 2 damage to each player.
+- The Dragon deals 4 damage to each player.
 
 **Scorching Breath (x4)**
 - Instant
-- The Dragon deals 3 damage to target player or creature. If the Dragon has 8 or more Fury Counters, it deals an additional 2 damage.
+- The Dragon deals 3 damage to target player or creature.
 
 **Fury Eruption (x3)**
 - Enchantment
@@ -35,25 +35,24 @@
 
 **Heroic Intervention (x4)**
 - Instant
-- Prevent all damage that would be dealt to you and permanents you control this turn. If the Dragon has 5 or more Fury Counters, draw a card.
+- Prevent all damage that would be dealt to you and permanents you control this turn.
 
 **Fury Barrier (x3)**
 - Enchantment
-- Players can't cast spells during the Dragon's turn. If the Dragon has 7 or more Fury Counters, exile Fury Barrier and create a 4/4 Dragon creature token with flying and haste.
+- Players can't cast spells during the Dragon's turn.
 
 **Rallying Cry (x4)**
 - Sorcery
-- Each player gains 3 life. If the Dragon has 9 or more Fury Counters, each player gains an additional 2 life.
+- Each player gains 3 life.
 
 **Dragon's Roar (x3)**
 - Instant
-- The Dragon deals 2 damage to each opponent. If the Dragon has 10 or more Fury Counters, it deals an additional 3 damage to each opponent.
+- The Dragon deals 2 damage to each opponent.
 
 **Dragon's Fury (x2)**
 - Enchantment
 - At the beginning of your upkeep, put a Fury Counter on the Dragon's Fury.
 - If there are 12 or more Fury Counters on the Dragon's Fury, you win the game.
-
 
 
 # Rules for the Dragon's Fury Challenge Deck:
