@@ -79,9 +79,8 @@
     - As long as there are five or more Zombies on the battlefield, all Zombies have menace and attack each turn if able.
     - Quantity: 4
 
-
-
-# **Zombie-Themed Challenge Deck Rules**
+# Rules
+**Zombie-Themed Challenge Deck Rules**
 
 1. **Objective:** The objective of the Zombie-themed challenge deck is to outlast the zombie horde by depleting their library. Players must work together to survive and prevent the zombies from overwhelming them.
 
