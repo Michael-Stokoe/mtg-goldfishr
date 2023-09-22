@@ -1,6 +1,6 @@
 # **Angel-Themed Challenge Deck**
 
-##**Creatures (30):**
+## **Creatures (30):**
 
 1. **Angelic Host**
    - Token Creature — Angel
@@ -41,7 +41,7 @@
    - 4/4
    - Quantity: 4
 
-##**Sorceries (15):**
+## **Sorceries (15):**
 
 6. **Heavenly Judgment**
    - Sorcery
@@ -68,7 +68,7 @@
     - Elysian Ascendance gains trample until end of turn and attacks this turn if able.
     - Quantity: 4
 
-##**Enchantments (15):**
+## **Enchantments (15):**
 
 11. **Celestial Ascension**
     - Enchantment
