@@ -50,4 +50,8 @@ export default class Game {
                 break;
         }
     }
+
+    getGameRulesText () {
+        return this.opponent.getOpponentRulesText();
+    }
 }

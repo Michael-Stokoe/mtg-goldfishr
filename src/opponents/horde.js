@@ -128,4 +128,18 @@ export default class Horde extends Opponent {
             }
         }
     }
+
+    getOpponentRulesText () {
+        return `
+            <li>If you're playing a standard 40 card deck, play your first turn, then start the Horde's first turn.</li>
+            <li>If you're playing a Commander/EDH deck, play out your first 3 turns, then start the Horde's first turn.</li>
+            <li>From now, you should take it in turns as if you're playing a normal game.</li>
+            <li>For an increased challenge, you can reduce the amount of setup turns you take, or allow the Horde to play first.</li>
+            <li>You can also opt to not deal combat damage to the horde, and only win by playing out the game until the horde has no cards left.</li>
+            <li>An orange arrow pointing down from a creature will indicate that it is tapped and attacking.</li>
+            <li>When the Horde plays a sorcery, the card will appear on screen for a short time, and apply any of its effects to the Minotaurs.</li>
+            <li>Attacking the Horde on your turn will put the top X cards of the Horde's library into its graveyard, X being the amount of damage dealt.</li>
+            <li>The Horde has infinite mana, and you should assume all costs will be paid (Smothering Tithe, Rhystic Study, etc.).</li>
+        `;
+    }
 }
