@@ -66,7 +66,7 @@ export default class Game {
     setPlayerFirstAndStart(first) {
         this.firstPlayerChosen = true;
         this.isOpponentTurn = !first;
-        this.currentTurn = 1;
+        this.currentTurn = 0;
 
         if (!first) {
             this.startOpponentTurn();
@@ -74,6 +74,7 @@ export default class Game {
     }
 
     startOpponentTurn() {
+        this.currentTurn++;
         // Untap step
         console.log('untapping permanents')
         this.opponent.boardState.forEach(card => {

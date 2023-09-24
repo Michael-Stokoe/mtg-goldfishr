@@ -31,19 +31,19 @@
 
                 <div class="grid grid-cols-3 gap-4" v-if="game">
                     <div>
-                        <p class="text-lg font-semibold">Library ({{ cardsLeftInOpponentsLibrary }}):</p>
+                        <p class="text-lg font-semibold">Library ({{ cardsInOpponentsLibrary }}):</p>
 
                         <library :library="game.opponent.library" />
                     </div>
 
                     <div>
-                        <p class="text-lg font-semibold">Graveyard (0):</p>
+                        <p class="text-lg font-semibold">Graveyard ({{ cardsInOpponentsGraveyard }}):</p>
 
                         <graveyard :graveyard="game.opponent.graveyard" />
                     </div>
 
                     <div>
-                        <p class="text-lg font-semibold">Exile (0):</p>
+                        <p class="text-lg font-semibold">Exile ({{ cardsInOpponentsExile }}):</p>
 
                         <exile :exile="game.opponent.exile" />
                     </div>
@@ -181,7 +181,7 @@ export default {
         },
 
         showFirstTurnText() {
-            return (this.gameStarted && this.game.currentTurn === 1 && this.game.firstPlayerChosen && !this.game.isOpponentTurn) ?? false;
+            return (this.gameStarted && this.game.currentTurn === 0 && this.game.firstPlayerChosen && !this.game.isOpponentTurn) ?? false;
         },
 
         showCurrentTurnNumber() {
@@ -213,12 +213,25 @@ export default {
             return [];
         },
 
-        cardsLeftInOpponentsLibrary() {
+        cardsInOpponentsLibrary() {
             if (this.gameExists) {
                 return this.game.opponent.library.length;
             }
             return 0;
-        }
+        },
+
+        cardsInOpponentsGraveyard() {
+            if (this.gameExists) {
+                return this.game.opponent.graveyard.length;
+            }
+            return 0;
+        },
+        cardsInOpponentsExile() {
+            if (this.gameExists) {
+                return this.game.opponent.exile.length;
+            }
+            return 0;
+        },
     }
 }
 </script>
