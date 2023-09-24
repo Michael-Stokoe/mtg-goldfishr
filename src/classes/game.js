@@ -5,6 +5,9 @@ export default class Game {
     currentTurn = null;
     currentPhase = null;
     opponent = null;
+    started = false;
+    isOpponentTurn = false;
+    firstPlayerChosen = false;
 
     phases = [
         'untap',
@@ -53,5 +56,34 @@ export default class Game {
 
     getGameRulesText () {
         return this.opponent.getOpponentRulesText();
+    }
+
+    startGame () {
+        this.started = true;
+    }
+
+    setPlayerFirstAndStart(first) {
+        this.firstPlayerChosen = true;
+        this.isOpponentTurn = !first;
+        this.currentTurn = 1;
+
+        if (!first) {
+            this.startOpponentTurn();
+        }
+    }
+
+    startOpponentTurn() {
+        // ...
+    }
+
+    advancePhase () {
+        let currentPhaseIndex = this.phases.indexOf(this.currentPhase);
+        let nextPhaseIndex = currentPhaseIndex + 1;
+
+        if (nextPhaseIndex > this.phases.length - 1) {
+            nextPhaseIndex = 0;
+        }
+
+        this.currentPhase = this.phases[nextPhaseIndex];
     }
 }

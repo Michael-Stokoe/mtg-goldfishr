@@ -12,10 +12,14 @@
         </div>
 
         <div class="flex flex-col p-6 space-y-4 text-white bg-gray-800 rounded-lg">
-            <div class="flex justify-between w-full">
+            <div class="flex justify-between w-full cursor-pointer" @click.prevent="showRules = !showRules">
                 <h3 class="text-2xl font-semibold">Rules</h3>
 
-                <a href="#" @click.prevent="showRules = !showRules">x</a>
+                <span>
+                    <i class="text-2xl transition-transform duration-500 fa-solid fa-circle-chevron-up" :class="{
+                        'rotate-180': !showRules,
+                    }"></i>
+                </span>
             </div>
 
             <ul class="list-disc list-inside" v-html="gameRulesText" v-show="showRules"></ul>
@@ -54,6 +58,30 @@
 
             <div class="flex flex-col col-span-3 mt-8 space-y-6">
                 <h3 class="text-2xl font-semibold">Battlefield</h3>
+                <span v-if="showCurrentTurnNumber">Current Turn:
+                    <span class="font-semibold text-white">{{ currentTurn }}</span>
+                </span>
+
+                <div class="flex justify-center py-24 border-[3px] border-gray-500 rounded-xl">
+                    <btn v-if="!gameStarted" :label="'Start Game'" @click="startGame" />
+
+                    <div class="flex flex-col space-y-2" v-if="showWhoseFirstQuestion">
+                        <p>Are you going first?</p>
+
+                        <div class="flex justify-center space-x-2">
+                            <btn :label="'Yes'" @click="setPlayerFirst(true)" />
+                            <btn :label="'No'" @click="setPlayerFirst(false)" />
+                        </div>
+                    </div>
+
+                    <div v-if="showStartOpponentsTurnButton" class="flex flex-col justify-center space-y-2 text-center">
+                        <p v-if="showFirstTurnText">Play out your desired amount of setup turns and hit the button below to
+                            start the Opponent's first turn.</p>
+                        <div>
+                            <btn :label="'Start Opponent\'s Turn'" @click="startOpponentTurn" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -65,6 +93,7 @@ import LifeCounter from '../components/LifeCounter.vue';
 import Library from '../components/Library.vue';
 import Graveyard from '../components/Graveyard.vue';
 import Exile from '../components/Exile.vue';
+import Btn from '../components/Btn.vue';
 
 export default {
     name: "GamePage",
@@ -74,12 +103,13 @@ export default {
         Library,
         Graveyard,
         Exile,
+        Btn,
     },
 
     data: () => ({
         gameTitle: '',
         game: null,
-        showRules: true,
+        showRules: false,
     }),
 
     mounted() {
@@ -88,16 +118,59 @@ export default {
         this.gameTitle = this.game.title;
     },
 
-    methods: {},
+    methods: {
+        startGame() {
+            this.game.startGame();
+        },
+
+        setPlayerFirst(first) {
+            this.game.setPlayerFirstAndStart(first);
+        },
+
+        startOpponentTurn() {
+            this.game.startOpponentTurn();
+        },
+    },
 
     computed: {
-        gameRulesText() {
-            if (this.game) {
-                return this.game.getGameRulesText();
-            }
-
-            return '';
+        gameExists() {
+            return this.game;
         },
+
+        gameStarted() {
+            if (this.gameExists) {
+                return this.game.started;
+            }
+            return false;
+        },
+
+        gameRulesText() {
+            return this.gameExists ? this.game.getGameRulesText() : '';
+        },
+
+        showStartOpponentsTurnButton() {
+            return (this.gameStarted && (this.game.firstPlayerChosen)) ? !(this.game.isOpponentTurn) : false;
+        },
+
+        showWhoseFirstQuestion() {
+            return (this.gameStarted && this.game.currentTurn === null) ?? false;
+        },
+
+        isPlayersTurn() {
+            return (this.gameStarted && this.game.isOpponentTurn === false) ?? false;
+        },
+
+        showFirstTurnText() {
+            return (this.gameStarted && this.game.currentTurn === 1 && this.game.firstPlayerChosen && !this.game.isOpponentTurn) ?? false;
+        },
+
+        showCurrentTurnNumber() {
+            return (this.gameStarted && this.game.currentTurn !== null) ?? false;
+        },
+
+        currentTurn() {
+            return (this.gameStarted && this.game.currentTurn !== null) ? this.game.currentTurn : 0;
+        }
     }
 }
 </script>

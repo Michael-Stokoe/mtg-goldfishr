@@ -15,16 +15,16 @@
             <div v-show="hovering" v-if="cardsInGraveyard > 0"
                 class="absolute top-0 left-0 z-50 flex flex-col justify-center w-full h-full bg-black rounded-lg cursor-pointer opacity-80"
                 :class="{
-                    '-top-[0px]': cardsInGraveyard === 1,
-                    '-top-[2px]': cardsInGraveyard === 2,
-                    '-top-[4px]': cardsInGraveyard === 3,
-                    '-top-[6px]': cardsInGraveyard === 4,
-                    '-top-[8px]': cardsInGraveyard === 5,
-                    '-top-[10px]': cardsInGraveyard === 6,
-                    '-top-[12px]': cardsInGraveyard === 7,
-                    '-top-[14px]': cardsInGraveyard === 8,
-                    '-top-[16px]': cardsInGraveyard === 9,
-                    '-top-[18px]': cardsInGraveyard >= 10,
+                    '-mt-[0px]': cardsInGraveyard === 1,
+                    '-mt-[2px]': cardsInGraveyard === 2,
+                    '-mt-[4px]': cardsInGraveyard === 3,
+                    '-mt-[6px]': cardsInGraveyard === 4,
+                    '-mt-[8px]': cardsInGraveyard === 5,
+                    '-mt-[10px]': cardsInGraveyard === 6,
+                    '-mt-[12px]': cardsInGraveyard === 7,
+                    '-mt-[14px]': cardsInGraveyard === 8,
+                    '-mt-[16px]': cardsInGraveyard === 9,
+                    '-mt-[18px]': cardsInGraveyard >= 10,
                 }">
                 <span class="p-2 text-center text-gray-400 hover:text-white">
                     Show Contents
