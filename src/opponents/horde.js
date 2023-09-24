@@ -35,31 +35,22 @@ export default class Horde extends Opponent {
     }
 
     handleMainPhase1 () {
-        // get artifact count
-        // add artifact count to 2.
-        // play that many spells from top of horde's library.
-        // add any sorcery spells to the combat start handlers array.
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+    }
 
-        console.log('getting spells to cast')
-        let artifactCount = this.boardState.filter(card => card.superTypes.includes('Artifact')).length;
-        let spellsToPlay = artifactCount + 2;
-        console.log(`casting ${spellsToPlay} spells`)
+    castTopSpellOfLibrary () {
+        let card = this.library.shift();
 
-        for (var i = 0; i < spellsToPlay; i++) {
-            let card = this.library.shift();
-
-            if (card) {
-                if (card.superTypes.includes('Sorcery')) {
-                    this.combatStartHandlers.push(card);
-                    this.nonPermanentsPlayed.push(card);
-                } else {
-                    this.boardState.push(card);
-                }
-                
-                console.log(`casting ${card.name}`)
+        if (card) {
+            if (card.superTypes.includes('Sorcery')) {
+                this.combatStartHandlers.push(card);
+                this.nonPermanentsPlayed.push(card);
             } else {
-                console.log('no more cards to cast');
+                this.boardState.push(card);
             }
+        } else {
+            //TODO: No more cards left in library to cast
         }
     }
     
@@ -120,11 +111,10 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Altar of Mogis') {
-            card.handlers.main1 = function () {
-                // At the beginning of the horde's precombat main phase,
-                // reveal an additional card from the top of the horde's library.
-                // The horde casts that card.
-            }
+            let self = this;
+            card.handlers.main1.push(function () {
+                self.castTopSpellOfLibrary();
+            });
 
             card.handlers.death = function () {
                 // The horde sacrifices two Minotaurs.
@@ -132,11 +122,10 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Massacre Totem') {
-            card.handlers.main1 = function () {
-                // At the beginning of the horde's precombat main phase,
-                // reveal an additional card from the top of the horde's library.
-                // The horde casts that card.
-            }
+            let self = this;
+            card.handlers.main1.push(function () {
+                self.castTopSpellOfLibrary();
+            });
 
             card.handlers.death = function () {
                 // The horde mills 7 cards
@@ -144,11 +133,10 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Plundered Statue') {
-            card.handlers.main1 = function () {
-                // At the beginning of the horde's precombat main phase,
-                // reveal an additional card from the top of the horde's library.
-                // The horde casts that card.
-            }
+            let self = this;
+            card.handlers.main1.push(function () {
+                self.castTopSpellOfLibrary();
+            });
 
             card.handlers.death = function () {
                 // Each player draws a card
@@ -156,11 +144,10 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Refreshing Elixir') {
-            card.handlers.main1 = function () {
-                // At the beginning of the horde's precombat main phase,
-                // reveal an additional card from the top of the horde's library.
-                // The horde casts that card.
-            }
+            let self = this;
+            card.handlers.main1.push(function () {
+                self.castTopSpellOfLibrary();
+            });
 
             card.handlers.death = function () {
                 // Each player gains 5 life.
@@ -168,11 +155,10 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Vitality Salve') {
-            card.handlers.main1 = function () {
-                // At the beginning of the horde's precombat main phase,
-                // reveal an additional card from the top of the horde's library.
-                // The horde casts that card.
-            }
+            let self = this;
+            card.handlers.main1.push(function () {
+                self.castTopSpellOfLibrary();
+            });
 
             card.handlers.death = function () {
                 // Each player returns a creature card from their graveyard to the battlefield.
@@ -182,7 +168,7 @@ export default class Horde extends Opponent {
 
     getOpponentRulesText () {
         return `
-            <li>If you're playing a standard 40 card deck, play your first turn, then start the Horde's first turn.</li>
+            <li>If you're playing a standard 60 card deck, play your first turn, then start the Horde's first turn.</li>
             <li>If you're playing a Commander/EDH deck, play out your first 3 turns, then start the Horde's first turn.</li>
             <li>From now, you should take it in turns as if you're playing a normal game.</li>
             <li>For an increased challenge, you can reduce the amount of setup turns you take, or allow the Horde to play first.</li>

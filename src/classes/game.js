@@ -76,7 +76,6 @@ export default class Game {
     startOpponentTurn() {
         this.currentTurn++;
         // Untap step
-        console.log('untapping permanents')
         this.opponent.boardState.forEach(card => {
             card.tapped = false;
 
@@ -88,7 +87,6 @@ export default class Game {
         });
 
         // Upkeep step
-        console.log('handling upkeep')
         this.opponent.boardState.forEach(card => {
             if (card.handlers.upkeep.length) {
                 card.handlers.upkeep.forEach(handler => {
@@ -98,7 +96,6 @@ export default class Game {
         });
 
         // Draw step
-        console.log('drawing a card')
         this.opponent.boardState.forEach(card => {
             if (card.handlers.draw.length) {
                 card.handlers.draw.forEach(handler => {
@@ -108,16 +105,15 @@ export default class Game {
         });
 
         // Main phase 1
-        console.log('handling main phase 1')
         this.opponent.boardState.forEach(card => {
             if (card.handlers.main1.length) {
                 card.handlers.main1.forEach(handler => {
+                    console.log(`running main phase handler for ${card.name}`)
                     handler();
                 });
             }
         });
 
-        console.log('running opponent-specific main-phase 1 handlers')
         this.opponent.handleMainPhase1();
 
         // Combat phase
@@ -133,7 +129,6 @@ export default class Game {
         // Main phase 2
 
         // End step
-        console.log('handling end step');
         this.opponent.handleEndStep();
     }
 

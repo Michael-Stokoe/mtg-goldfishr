@@ -6,6 +6,7 @@ export default class Card {
     tapped = false;
     image = null;
     id = null;
+    isAttacking = false;
 
     permanentCardTypes = [
         'artifact',

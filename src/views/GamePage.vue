@@ -147,7 +147,6 @@ export default {
         },
 
         startOpponentTurn() {
-            console.log('starting opponents turn');
             this.game.startOpponentTurn();
         },
     },
