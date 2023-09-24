@@ -1,30 +1,30 @@
 <template>
     <div class="relative flex" :class="{
-        'mt-[0px]': cardsInGraveyard === 1,
-        'mt-[2px]': cardsInGraveyard === 2,
-        'mt-[4px]': cardsInGraveyard === 3,
-        'mt-[6px]': cardsInGraveyard === 4,
-        'mt-[8px]': cardsInGraveyard === 5,
-        'mt-[10px]': cardsInGraveyard === 6,
-        'mt-[12px]': cardsInGraveyard === 7,
-        'mt-[14px]': cardsInGraveyard === 8,
-        'mt-[16px]': cardsInGraveyard === 9,
-        'mt-[18px]': cardsInGraveyard >= 10,
+        'mt-[0px]': graveyard.length === 1,
+        'mt-[2px]': graveyard.length === 2,
+        'mt-[4px]': graveyard.length === 3,
+        'mt-[6px]': graveyard.length === 4,
+        'mt-[8px]': graveyard.length === 5,
+        'mt-[10px]': graveyard.length === 6,
+        'mt-[12px]': graveyard.length === 7,
+        'mt-[14px]': graveyard.length === 8,
+        'mt-[16px]': graveyard.length === 9,
+        'mt-[18px]': graveyard.length >= 10,
     }">
         <div class="relative" @mouseenter="hovering = true" @mouseleave="hovering = false">
-            <div v-show="hovering" v-if="cardsInGraveyard > 0"
+            <div v-show="hovering" v-if="graveyard.length > 0"
                 class="absolute top-0 left-0 z-50 flex flex-col justify-center w-full h-full bg-black rounded-lg cursor-pointer opacity-80"
                 :class="{
-                    '-mt-[0px]': cardsInGraveyard === 1,
-                    '-mt-[2px]': cardsInGraveyard === 2,
-                    '-mt-[4px]': cardsInGraveyard === 3,
-                    '-mt-[6px]': cardsInGraveyard === 4,
-                    '-mt-[8px]': cardsInGraveyard === 5,
-                    '-mt-[10px]': cardsInGraveyard === 6,
-                    '-mt-[12px]': cardsInGraveyard === 7,
-                    '-mt-[14px]': cardsInGraveyard === 8,
-                    '-mt-[16px]': cardsInGraveyard === 9,
-                    '-mt-[18px]': cardsInGraveyard >= 10,
+                    '-mt-[0px]': graveyard.length === 1,
+                    '-mt-[2px]': graveyard.length === 2,
+                    '-mt-[4px]': graveyard.length === 3,
+                    '-mt-[6px]': graveyard.length === 4,
+                    '-mt-[8px]': graveyard.length === 5,
+                    '-mt-[10px]': graveyard.length === 6,
+                    '-mt-[12px]': graveyard.length === 7,
+                    '-mt-[14px]': graveyard.length === 8,
+                    '-mt-[16px]': graveyard.length === 9,
+                    '-mt-[18px]': graveyard.length >= 10,
                 }">
                 <span class="p-2 text-center text-gray-400 hover:text-white">
                     Show Contents
@@ -58,17 +58,24 @@ export default {
         'graveyard',
     ],
 
+    mounted() {
+        // this.$events.on('refresh-state', () => {
+        //     this.refreshKey++;
+        // });
+    },
+
+    unmounted() {
+        // this.$events.off('refresh-state');
+    },
+
     data: () => ({
+        refreshKey: 0,
         hovering: false,
     }),
 
     computed: {
-        cardsInGraveyard() {
-            return this.graveyard.length;
-        },
-
         graveyardRenderer() {
-            if (this.cardsInGraveyard > 10) {
+            if (this.graveyard.length > 10) {
                 return this.graveyard.slice(0, 10);
             }
             return this.graveyard;

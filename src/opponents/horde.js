@@ -30,27 +30,6 @@ export default class Horde extends Opponent {
         this.castTopSpellOfLibrary();
         this.castTopSpellOfLibrary();
     }
-
-    castTopSpellOfLibrary () {
-        let card = this.library.shift();
-
-        if (card) {
-            // if (card.superTypes.includes('Sorcery')) {
-            //     this.combatStartHandlers.push(card);
-            //     this.nonPermanentsPlayed.push(card);
-            // } else {
-            //     this.boardState.push(card);
-            // }
-
-            this.eventsBus.emit('cast-card', card);
-            // await user response.
-
-
-            // continue with game.
-        } else {
-            //TODO: No more cards left in library to cast
-        }
-    }
     
     handleEndStep() {
         this.nonPermanentsPlayed.forEach(card => {
@@ -61,51 +40,51 @@ export default class Horde extends Opponent {
     }
 
     applyCardHandlers (card) {
-        if (card.name === 'Mogis\'s Chosen') {
-            card.handlers.enterTheBattlefield = function () {
-                this.tapped = true;
-            }
+        if (card.name === "Mogis's Chosen") {
+            card.handlers.enterTheBattlefield.push(function () {
+                card.tapped = true;
+            });
         }
 
         if (card.name === 'Reckless Minotaur') {
-            card.handlers.end = function () {
-                this.kill();
-            }
+            card.handlers.end.push(function () {
+                this.eventsBus.emit('destroy-card', card);
+            });
         }
 
         if (card.name === 'Consuming Rage') {
-            card.handlers.cast = function () {
+            card.handlers.cast.push(function () {
                 // whenever a minotaur attacks this turn,
                 // it gets +2/+0 until end of turn.
                 // destroy that creature at the end of combat.
-            }
+            });
         }
 
         if (card.name === 'Descend on the Prey') {
-            card.handlers.cast = function () {
+            card.handlers.cast.push(function () {
                 // Whenever a minotaur attacks this turn, it gains
                 // first strike and must be block this turn if able.
-            }
+            });
         }
 
         if (card.name === 'Intervention of Keranos') {
-            card.handlers.cast = function () {
+            card.handlers.cast.push(function () {
                 // At the beginning of combat this turn,
                 // Intervention of Keranos deals 3 damage to each creature.
-            }
+            });
         }
 
         if (card.name === 'Touch of the Horned God') {
-            card.handlers.cast = function () {
+            card.handlers.cast.push(function () {
                 // Whenever a minotaur attacks this turn, it gains
                 // deathtouch until end of turn.
-            }
+            });
         }
 
         if (card.name === 'Unquenchable Fury') {
-            card.handlers.cast = function () {
+            card.handlers.cast.push(function () {
                 // Each Minotaur can't be blocked this turn except by two or more creatures.
-            }
+            });
         }
 
         if (card.name === 'Altar of Mogis') {
@@ -114,9 +93,9 @@ export default class Horde extends Opponent {
                 self.castTopSpellOfLibrary();
             });
 
-            card.handlers.death = function () {
+            card.handlers.enterGraveyard.push(function () {
                 // The horde sacrifices two Minotaurs.
-            }
+            });
         }
 
         if (card.name === 'Massacre Totem') {
@@ -125,9 +104,9 @@ export default class Horde extends Opponent {
                 self.castTopSpellOfLibrary();
             });
 
-            card.handlers.death = function () {
+            card.handlers.enterGraveyard.push(function () {
                 // The horde mills 7 cards
-            }
+            });
         }
 
         if (card.name === 'Plundered Statue') {
@@ -136,9 +115,9 @@ export default class Horde extends Opponent {
                 self.castTopSpellOfLibrary();
             });
 
-            card.handlers.death = function () {
+            card.handlers.enterGraveyard.push(function () {
                 // Each player draws a card
-            }
+            });
         }
 
         if (card.name === 'Refreshing Elixir') {
@@ -147,9 +126,9 @@ export default class Horde extends Opponent {
                 self.castTopSpellOfLibrary();
             });
 
-            card.handlers.death = function () {
+            card.handlers.enterGraveyard.push(function () {
                 // Each player gains 5 life.
-            }
+            });
         }
 
         if (card.name === 'Vitality Salve') {
@@ -158,9 +137,9 @@ export default class Horde extends Opponent {
                 self.castTopSpellOfLibrary();
             });
 
-            card.handlers.death = function () {
+            card.handlers.enterGraveyard.push(function () {
                 // Each player returns a creature card from their graveyard to the battlefield.
-            }
+            });
         }
     }
 

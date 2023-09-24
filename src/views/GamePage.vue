@@ -33,19 +33,19 @@
                     <div>
                         <p class="text-lg font-semibold">Library ({{ cardsInOpponentsLibrary }}):</p>
 
-                        <library :library="game.opponent.library" />
+                        <library :library="opponent.library" />
                     </div>
 
                     <div>
                         <p class="text-lg font-semibold">Graveyard ({{ cardsInOpponentsGraveyard }}):</p>
 
-                        <graveyard :graveyard="game.opponent.graveyard" />
+                        <graveyard :graveyard="opponent.graveyard" />
                     </div>
 
                     <div>
                         <p class="text-lg font-semibold">Exile ({{ cardsInOpponentsExile }}):</p>
 
-                        <exile :exile="game.opponent.exile" />
+                        <exile :exile="opponent.exile" />
                     </div>
                 </div>
             </div>
@@ -173,14 +173,22 @@ export default {
 
         this.gameTitle = this.game.title;
 
-        this.$events.on('refresh-board-state', () => {
+        this.$events.on('refresh-state', () => {
             this.refreshKey++;
         });
+    },
 
-        // this.$events.on('cast-card', card => {
-        //     this.opponentIsCasting = true;
-        //     this.cardOpponentIsCasting = card;
-        // });
+    unmounted() {
+        this.$events.off('refresh-state');
+        this.$events.off('tap-card');
+        this.$events.off('cast-card');
+        this.$events.off('game-started');
+        this.$events.off('current-card-resolves');
+        this.$events.off('destroy-card');
+        this.$events.off('exile-card');
+        this.$events.off('card-resolves');
+        this.$events.off('card-counteredd');
+
     },
 
     methods: {
@@ -215,6 +223,10 @@ export default {
 
         gameRulesText() {
             return this.gameExists ? this.game.getGameRulesText() : '';
+        },
+
+        opponent() {
+            return this.gameExists ? this.game.opponent : null;
         },
 
         showStartOpponentsTurnButton() {
@@ -265,21 +277,21 @@ export default {
 
         cardsInOpponentsLibrary() {
             if (this.gameExists) {
-                return this.game.opponent.library.length;
+                return this.opponent.library.length;
             }
             return 0;
         },
 
         cardsInOpponentsGraveyard() {
             if (this.gameExists) {
-                return this.game.opponent.graveyard.length;
+                return this.opponent.graveyard.length;
             }
             return 0;
         },
 
         cardsInOpponentsExile() {
             if (this.gameExists) {
-                return this.game.opponent.exile.length;
+                return this.opponent.exile.length;
             }
             return 0;
         },

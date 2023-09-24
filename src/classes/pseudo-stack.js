@@ -34,19 +34,15 @@ export default class PseudoStack {
     }
 
     resolve () {
-        let card = this.stack.pop();
+        let card = this.stack.splice(0,1)[0];
 
-        if (card) {
-            card.cast();
-        }
+        this.eventsBus.emit('card-resolves', card);
     }
 
     counter () {
-        let card = this.stack.pop();
+        let card = this.stack.splice(0,1)[0];
 
-        if (card) {
-            card.counter();
-        }
+        this.eventsBus.emit('card-countered', card);
     }
 
     resolveAll () {

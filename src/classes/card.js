@@ -1,3 +1,5 @@
+import { getCurrentInstance } from "vue";
+
 export default class Card {
     name = null;
     superTypes = [];
@@ -9,6 +11,8 @@ export default class Card {
     isAttacking = false;
     power = null;
     toughness = null;
+
+    eventsBus = null;
 
     permanentCardTypes = [
         'artifact',
@@ -40,7 +44,7 @@ export default class Card {
 
         attack: [],
         enterTheBattlefield: [],
-        leaveTheBattlefield: [],
+        enterGraveyard: [],
         blocked: [],
         cast: [],
         death: [],
@@ -56,6 +60,14 @@ export default class Card {
         this.id = Math.random().toString(36);
         this.power = power;
         this.toughness = toughness;
+
+        this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
+
+        // this.eventsBus.on('tap-card', card => {
+        //     if (card && card.id === this.id) {
+        //         card.tapped = true;
+        //     }
+        // });
     }
 
     cast() {
