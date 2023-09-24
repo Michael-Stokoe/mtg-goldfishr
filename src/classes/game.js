@@ -1,4 +1,6 @@
-import Horde from '../opponents/horde.js'
+import { getCurrentInstance } from 'vue';
+import Horde from '../opponents/horde.js';
+import PseudoStack from '../classes/pseudo-stack';
 
 export default class Game {
     title = null;
@@ -8,6 +10,8 @@ export default class Game {
     started = false;
     isOpponentTurn = false;
     firstPlayerChosen = false;
+    eventsBus = null;
+    stack = null;
 
     phases = [
         'untap',
@@ -20,8 +24,10 @@ export default class Game {
     ];
 
     constructor (game) {
+        this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
         this.setTitle(game);
         this.setOpponent(game);
+        this.stack = new PseudoStack();
     }
 
     setTitle (game) {
@@ -60,6 +66,9 @@ export default class Game {
 
     startGame () {
         this.started = true;
+        this.eventsBus.emit('game-started', {
+            game: this,
+        });
         this.opponent.setupStartingBoardState();
     }
 
@@ -115,20 +124,8 @@ export default class Game {
 
         this.opponent.handleMainPhase1();
 
-        // Combat phase
-
-        // Declare Attackers
-
-        // Wait for blockers declared
-
-        // Combat damage
-
-        // Combat cleanup
-
-        // Main phase 2
-
-        // End step
-        this.opponent.handleEndStep();
+        // Move to combat phase
+        this.eventsBus.emit('pre-combat-main-phase-complete');
     }
 
     advancePhase () {

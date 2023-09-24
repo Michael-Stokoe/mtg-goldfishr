@@ -11,7 +11,7 @@ export default class Horde extends Opponent {
         let self = this;
         decklist.forEach(function (card) {
             for (var i = 0; i < card.count; i++) {
-                let newCard = new Card(card.name, card.superTypes, card.subTypes, 0, card.image);
+                let newCard = new Card(card.name, card.superTypes, card.subTypes, 0, card.image, card.power, card.toughness);
 
                 self.applyCardHandlers(newCard);
 
@@ -35,12 +35,18 @@ export default class Horde extends Opponent {
         let card = this.library.shift();
 
         if (card) {
-            if (card.superTypes.includes('Sorcery')) {
-                this.combatStartHandlers.push(card);
-                this.nonPermanentsPlayed.push(card);
-            } else {
-                this.boardState.push(card);
-            }
+            // if (card.superTypes.includes('Sorcery')) {
+            //     this.combatStartHandlers.push(card);
+            //     this.nonPermanentsPlayed.push(card);
+            // } else {
+            //     this.boardState.push(card);
+            // }
+
+            this.eventsBus.emit('cast-card', card);
+            // await user response.
+
+
+            // continue with game.
         } else {
             //TODO: No more cards left in library to cast
         }

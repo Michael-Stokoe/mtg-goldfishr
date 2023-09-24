@@ -7,6 +7,8 @@ export default class Card {
     image = null;
     id = null;
     isAttacking = false;
+    power = null;
+    toughness = null;
 
     permanentCardTypes = [
         'artifact',
@@ -45,16 +47,22 @@ export default class Card {
         tap: [],
     }
 
-    constructor (name, superTypes, subTypes, manaCost, image) {
+    constructor (name, superTypes, subTypes, manaCost, image, power, toughness) {
         this.name = name;
         this.superTypes = superTypes;
         this.subTypes = subTypes;
         this.manaCost = manaCost;
         this.image = image;
         this.id = Math.random().toString(36);
+        this.power = power;
+        this.toughness = toughness;
     }
 
-    kill () {
-        // send card to graveyard
+    cast() {
+        // ...
+    }
+
+    counter() {
+        // ...
     }
 }

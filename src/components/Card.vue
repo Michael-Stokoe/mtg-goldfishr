@@ -3,7 +3,8 @@
         <div class="relative" @mouseenter="hovering = true" @mouseleave="hovering = false" :class="{
             'ring-red-600 ring-[5px] rounded-xl': isAttacking,
         }">
-            <div v-if="hovering" class="absolute top-0 left-0 z-50 w-full h-full bg-black rounded-xl opacity-80">
+            <div v-if="hovering && !hideOverlay"
+                class="absolute top-0 left-0 z-50 w-full h-full bg-black rounded-xl opacity-80">
                 <div class="flex flex-col justify-center h-full space-y-4">
                     <p class="text-lg font-bold text-center text-white">{{ card.name }}</p>
 
@@ -41,7 +42,7 @@
 export default {
     name: "Card",
 
-    props: ['card'],
+    props: ['card', 'hideOverlay'],
 
     data: () => ({
         hovering: false,

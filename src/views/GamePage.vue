@@ -62,7 +62,10 @@
                     <span class="font-semibold text-white">{{ currentTurn }}</span>
                 </span>
 
-                <div class="flex flex-col justify-center py-24 border-[3px] border-gray-500 rounded-xl">
+                <div class="flex flex-col justify-center border-[3px] border-gray-500 rounded-xl" :class="{
+                    'py-24': !gameStarted,
+                    'py-6': gameStarted,
+                }">
                     <div class="flex justify-center">
                         <btn v-if="!gameStarted" :label="'Start Game'" @click="startGame" />
                     </div>
@@ -85,12 +88,43 @@
                     </div>
 
                     <div class="flex flex-col px-6 space-y-4">
+                        <div v-if="stack.length" class="flex flex-col mt-8 space-y-4">
+                            <p class="text-xl font-semibold">The opponent is casting...</p>
+                            <div class="flex space-x-4">
+                                <card :card="stack[0]" :hideOverlay="true" />
+
+                                <div class="flex flex-col space-y-2 text-left">
+                                    <h2 class="text-xl font-semibold">{{ stack[0].name }}</h2>
+
+                                    <p class="text-lg font-semibold">
+                                        {{ stack[0].superTypes.join(', ') }}
+                                        <span v-if="stack[0].superTypes.includes('Creature')">
+                                            - {{ stack[0].subTypes.join(', ') }}
+                                        </span>
+                                    </p>
+
+                                    <p v-if="stack[0].superTypes.includes('Creature')" class="text-lg font-semibold">
+                                        {{ stack[0].power + '/' + stack[0].toughness }}
+                                    </p>
+
+                                    <p>Does it resolve?</p>
+
+                                    <div class="flex space-x-2">
+                                        <btn :label="'Yes'" @click="currentCardResolves(true)" />
+                                        <btn :label="'No (Counter it)'" :colour="'red'"
+                                            @click="currentCardResolves(false)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div v-if="boardStateArtifacts.length" class="flex flex-col mt-8 space-y-4">
                             <p class="text-xl font-semibold">Artifacts</p>
                             <div class="grid grid-cols-5 gap-4">
                                 <card v-for="card in boardStateArtifacts" :key="card.id" :card="card" />
                             </div>
                         </div>
+
                         <div v-if="boardStateCreatures.length" class="flex flex-col mt-8 space-y-4">
                             <p class="text-xl font-semibold">Creatures</p>
                             <div class="grid grid-cols-5 gap-4">
@@ -130,6 +164,8 @@ export default {
         game: null,
         showRules: false,
         refreshKey: 0,
+        opponentIsCasting: false,
+        cardOpponentIsCasting: null,
     }),
 
     mounted() {
@@ -140,6 +176,11 @@ export default {
         this.$events.on('refresh-board-state', () => {
             this.refreshKey++;
         });
+
+        // this.$events.on('cast-card', card => {
+        //     this.opponentIsCasting = true;
+        //     this.cardOpponentIsCasting = card;
+        // });
     },
 
     methods: {
@@ -154,6 +195,10 @@ export default {
         startOpponentTurn() {
             this.game.startOpponentTurn();
         },
+
+        currentCardResolves(resolves) {
+            this.$events.emit('current-card-resolves', resolves);
+        }
     },
 
     computed: {
@@ -231,12 +276,20 @@ export default {
             }
             return 0;
         },
+
         cardsInOpponentsExile() {
             if (this.gameExists) {
                 return this.game.opponent.exile.length;
             }
             return 0;
         },
+
+        stack() {
+            if (this.gameStarted) {
+                return this.game.stack.stack;
+            }
+            return [];
+        }
     }
 }
 </script>

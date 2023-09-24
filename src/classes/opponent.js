@@ -1,6 +1,8 @@
 import { getCurrentInstance } from "vue";
 
 export default class Opponent {
+    game = null;
+
     library = [];
     graveyard = [];
     exile = [];
@@ -19,6 +21,10 @@ export default class Opponent {
     }
 
     setupEvents() {
+        this.eventsBus.on('game-started', gameParams => {
+            this.game = gameParams.game;
+        });
+
         this.eventsBus.on('destroy-card', card => {
             let boardState = this.boardState;
             let boardStateCardIds = boardState.map(card => card.id);
