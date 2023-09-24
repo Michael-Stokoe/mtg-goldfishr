@@ -1,19 +1,11 @@
 import decklist from '../decklists/horde.json';
 import Opponent from '../classes/opponent.js';
 import Card from '../classes/card.js';
-import { getCurrentInstance } from 'vue';
 
 export default class Horde extends Opponent {
     constructor () {
         super();
-
-        this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
     }
-
-    eventsBus = null;
-    boardState = null;
-    combatStartHandlers = [];
-    nonPermanentsPlayed = [];
 
     setDecklist () {
         let self = this;

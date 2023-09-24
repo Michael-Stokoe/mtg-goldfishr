@@ -129,12 +129,17 @@ export default {
         gameTitle: '',
         game: null,
         showRules: false,
+        refreshKey: 0,
     }),
 
     mounted() {
         this.game = new Game(this.$route.params.game);
 
         this.gameTitle = this.game.title;
+
+        this.$events.on('refresh-board-state', () => {
+            this.refreshKey++;
+        });
     },
 
     methods: {
@@ -192,6 +197,7 @@ export default {
         },
 
         boardState() {
+            this.refreshKey;
             if (this.gameStarted) {
                 return this.game.opponent.boardState;
             }

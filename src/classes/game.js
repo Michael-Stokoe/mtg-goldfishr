@@ -108,7 +108,6 @@ export default class Game {
         this.opponent.boardState.forEach(card => {
             if (card.handlers.main1.length) {
                 card.handlers.main1.forEach(handler => {
-                    console.log(`running main phase handler for ${card.name}`)
                     handler();
                 });
             }

@@ -18,11 +18,13 @@
                             <i class="w-6 fa-solid fa-shield-virus"></i> <span>Lethal Block</span>
                         </p>
 
-                        <p class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
+                        <p @click="destroyCard"
+                            class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
                             <i class="w-6 fa-solid fa-skull-crossbones"></i> <span>Destroy</span>
                         </p>
 
-                        <p class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
+                        <p @click="exileCard"
+                            class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
                             <i class="w-6 fa-solid fa-ban"></i> <span>Exile</span>
                         </p>
                     </div>
@@ -69,7 +71,13 @@ export default {
     },
 
     methods: {
-        // 
+        destroyCard() {
+            this.$events.emit('destroy-card', this.card);
+        },
+
+        exileCard() {
+            this.$events.emit('exile-card', this.card);
+        },
     }
 }
 </script>
