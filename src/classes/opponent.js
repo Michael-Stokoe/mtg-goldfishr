@@ -1,5 +1,7 @@
 export default class Opponent {
     library = [];
+    graveyard = [];
+    exile = [];
 
     constructor () {
         this.library = [];

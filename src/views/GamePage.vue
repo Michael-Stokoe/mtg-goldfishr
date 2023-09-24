@@ -31,7 +31,7 @@
 
                 <div class="grid grid-cols-3 gap-4" v-if="game">
                     <div>
-                        <p class="text-lg font-semibold">Library (60):</p>
+                        <p class="text-lg font-semibold">Library ({{ cardsLeftInOpponentsLibrary }}):</p>
 
                         <library :library="game.opponent.library" />
                     </div>
@@ -39,13 +39,13 @@
                     <div>
                         <p class="text-lg font-semibold">Graveyard (0):</p>
 
-                        <graveyard />
+                        <graveyard :graveyard="game.opponent.graveyard" />
                     </div>
 
                     <div>
                         <p class="text-lg font-semibold">Exile (0):</p>
 
-                        <exile />
+                        <exile :exile="game.opponent.exile" />
                     </div>
                 </div>
             </div>
@@ -62,10 +62,12 @@
                     <span class="font-semibold text-white">{{ currentTurn }}</span>
                 </span>
 
-                <div class="flex justify-center py-24 border-[3px] border-gray-500 rounded-xl">
-                    <btn v-if="!gameStarted" :label="'Start Game'" @click="startGame" />
+                <div class="flex flex-col justify-center py-24 border-[3px] border-gray-500 rounded-xl">
+                    <div class="flex justify-center">
+                        <btn v-if="!gameStarted" :label="'Start Game'" @click="startGame" />
+                    </div>
 
-                    <div class="flex flex-col space-y-2" v-if="showWhoseFirstQuestion">
+                    <div class="flex flex-col space-y-2 text-center" v-if="showWhoseFirstQuestion">
                         <p>Are you going first?</p>
 
                         <div class="flex justify-center space-x-2">
@@ -81,6 +83,21 @@
                             <btn :label="'Start Opponent\'s Turn'" @click="startOpponentTurn" />
                         </div>
                     </div>
+
+                    <div class="flex flex-col px-6 space-y-4">
+                        <div v-if="boardStateArtifacts.length" class="flex flex-col mt-8 space-y-4">
+                            <p class="text-xl font-semibold">Artifacts</p>
+                            <div class="grid grid-cols-5 gap-4">
+                                <card v-for="card in boardStateArtifacts" :key="card.id" :card="card" />
+                            </div>
+                        </div>
+                        <div v-if="boardStateCreatures.length" class="flex flex-col mt-8 space-y-4">
+                            <p class="text-xl font-semibold">Creatures</p>
+                            <div class="grid grid-cols-5 gap-4">
+                                <card v-for="card in boardStateCreatures" :key="card.id" :card="card" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -94,6 +111,7 @@ import Library from '../components/Library.vue';
 import Graveyard from '../components/Graveyard.vue';
 import Exile from '../components/Exile.vue';
 import Btn from '../components/Btn.vue';
+import Card from '../components/Card.vue';
 
 export default {
     name: "GamePage",
@@ -104,6 +122,7 @@ export default {
         Graveyard,
         Exile,
         Btn,
+        Card,
     },
 
     data: () => ({
@@ -128,6 +147,7 @@ export default {
         },
 
         startOpponentTurn() {
+            console.log('starting opponents turn');
             this.game.startOpponentTurn();
         },
     },
@@ -170,6 +190,34 @@ export default {
 
         currentTurn() {
             return (this.gameStarted && this.game.currentTurn !== null) ? this.game.currentTurn : 0;
+        },
+
+        boardState() {
+            if (this.gameStarted) {
+                return this.game.opponent.boardState;
+            }
+            return [];
+        },
+
+        boardStateArtifacts() {
+            if (this.gameStarted) {
+                return this.boardState.filter((card) => card.superTypes.includes('Artifact'));
+            }
+            return [];
+        },
+
+        boardStateCreatures() {
+            if (this.gameStarted) {
+                return this.boardState.filter((card) => card.superTypes.includes('Creature'));
+            }
+            return [];
+        },
+
+        cardsLeftInOpponentsLibrary() {
+            if (this.gameExists) {
+                return this.game.opponent.library.length;
+            }
+            return 0;
         }
     }
 }

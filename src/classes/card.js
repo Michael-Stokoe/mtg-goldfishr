@@ -4,40 +4,53 @@ export default class Card {
     subTypes = [];
     manaCost = null;
     tapped = false;
+    image = null;
+    id = null;
+
+    permanentCardTypes = [
+        'artifact',
+        'creature',
+        'enchantment',
+        'land',
+        'planeswalker',
+    ];
+
+    nonPermanentCardTypes = [
+        'instant',
+        'sorcery',
+    ];
 
     handlers = {
-        untap: null,
-        upkeep: null,
-        draw: null,
-        main1: null,
+        untap: [],
+        upkeep: [],
+        draw: [],
+        main1: [],
         combat: {
-            beginning: null,
-            declareAttackers: null,
-            declareBlockers: null,
-            combatDamage: null,
-            end: null,
+            beginning: [],
+            declareAttackers: [],
+            declareBlockers: [],
+            combatDamage: [],
+            end: [],
         },
-        main2: null,
-        end: null,
+        main2: [],
+        end: [],
 
-        attack: null,
-        enterTheBattlefield: null,
-        leaveTheBattlefield: null,
-        blocked: null,
-        cast: null,
-        death: null,
-        tap: null,
-        upkeep: null,
-        preCombatMainPhase: null,
-        postCombatMainPhase: null,
-        endStep: null,
+        attack: [],
+        enterTheBattlefield: [],
+        leaveTheBattlefield: [],
+        blocked: [],
+        cast: [],
+        death: [],
+        tap: [],
     }
 
-    constructor (name, superTypes, subTypes, manaCost) {
+    constructor (name, superTypes, subTypes, manaCost, image) {
         this.name = name;
         this.superTypes = superTypes;
         this.subTypes = subTypes;
         this.manaCost = manaCost;
+        this.image = image;
+        this.id = Math.random().toString(36);
     }
 
     kill () {

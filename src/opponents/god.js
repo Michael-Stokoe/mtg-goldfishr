@@ -6,4 +6,8 @@ export default class God extends Opponent {
     setDecklist () {
         this.library = [];
     }
+
+    setupStartingBoardState () {
+        //TODO
+    }
 }

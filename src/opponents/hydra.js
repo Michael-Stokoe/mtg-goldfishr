@@ -6,4 +6,8 @@ export default class Hydra extends Opponent {
     setDecklist () {
         this.library = [];
     }
+
+    setupStartingBoardState () {
+        //TODO
+    }
 }

@@ -1,34 +1,85 @@
 import decklist from '../decklists/horde.json';
 import Opponent from '../classes/opponent.js';
 import Card from '../classes/card.js';
+import { getCurrentInstance } from 'vue';
 
 export default class Horde extends Opponent {
     constructor () {
         super();
+
+        this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
     }
+
+    eventsBus = null;
+    boardState = null;
+    combatStartHandlers = [];
+    nonPermanentsPlayed = [];
 
     setDecklist () {
         let self = this;
         decklist.forEach(function (card) {
             for (var i = 0; i < card.count; i++) {
-                let newCard = new Card(card.name, card.superTypes, card.subTypes, 0);
+                let newCard = new Card(card.name, card.superTypes, card.subTypes, 0, card.image);
 
                 self.applyCardHandlers(newCard);
 
                 self.library.push(newCard);
             }
         });
+
+        this.shuffleLibrary();
+    }
+
+    setupStartingBoardState () {
+        this.boardState = [];
+    }
+
+    handleMainPhase1 () {
+        // get artifact count
+        // add artifact count to 2.
+        // play that many spells from top of horde's library.
+        // add any sorcery spells to the combat start handlers array.
+
+        console.log('getting spells to cast')
+        let artifactCount = this.boardState.filter(card => card.superTypes.includes('Artifact')).length;
+        let spellsToPlay = artifactCount + 2;
+        console.log(`casting ${spellsToPlay} spells`)
+
+        for (var i = 0; i < spellsToPlay; i++) {
+            let card = this.library.shift();
+
+            if (card) {
+                if (card.superTypes.includes('Sorcery')) {
+                    this.combatStartHandlers.push(card);
+                    this.nonPermanentsPlayed.push(card);
+                } else {
+                    this.boardState.push(card);
+                }
+                
+                console.log(`casting ${card.name}`)
+            } else {
+                console.log('no more cards to cast');
+            }
+        }
+    }
+    
+    handleEndStep() {
+        this.nonPermanentsPlayed.forEach(card => {
+            this.graveyard.push(card);
+        });
+
+        this.nonPermanentsPlayed = [];
     }
 
     applyCardHandlers (card) {
         if (card.name === 'Mogis\'s Chosen') {
-            card.onEnterTheBattleField = function () {
+            card.handlers.enterTheBattlefield = function () {
                 this.tapped = true;
             }
         }
 
         if (card.name === 'Reckless Minotaur') {
-            card.onEndStep = function () {
+            card.handlers.end = function () {
                 this.kill();
             }
         }

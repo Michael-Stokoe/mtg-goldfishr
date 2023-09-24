@@ -60,6 +60,7 @@ export default class Game {
 
     startGame () {
         this.started = true;
+        this.opponent.setupStartingBoardState();
     }
 
     setPlayerFirstAndStart(first) {
@@ -73,7 +74,66 @@ export default class Game {
     }
 
     startOpponentTurn() {
-        // ...
+        // Untap step
+        console.log('untapping permanents')
+        this.opponent.boardState.forEach(card => {
+            card.tapped = false;
+
+            if (card.handlers.untap.length) {
+                card.handlers.untap.forEach(handler => {
+                    handler();
+                });
+            }
+        });
+
+        // Upkeep step
+        console.log('handling upkeep')
+        this.opponent.boardState.forEach(card => {
+            if (card.handlers.upkeep.length) {
+                card.handlers.upkeep.forEach(handler => {
+                    handler();
+                });
+            }
+        });
+
+        // Draw step
+        console.log('drawing a card')
+        this.opponent.boardState.forEach(card => {
+            if (card.handlers.draw.length) {
+                card.handlers.draw.forEach(handler => {
+                    handler();
+                });
+            }
+        });
+
+        // Main phase 1
+        console.log('handling main phase 1')
+        this.opponent.boardState.forEach(card => {
+            if (card.handlers.main1.length) {
+                card.handlers.main1.forEach(handler => {
+                    handler();
+                });
+            }
+        });
+
+        console.log('running opponent-specific main-phase 1 handlers')
+        this.opponent.handleMainPhase1();
+
+        // Combat phase
+
+        // Declare Attackers
+
+        // Wait for blockers declared
+
+        // Combat damage
+
+        // Combat cleanup
+
+        // Main phase 2
+
+        // End step
+        console.log('handling end step');
+        this.opponent.handleEndStep();
     }
 
     advancePhase () {

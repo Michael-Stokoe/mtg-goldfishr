@@ -33,18 +33,18 @@
 
             <img src="/img/emptyzone.png" class="flex w-48" />
 
-            <img v-for="x in (cardsInExile > 10 ? 10 : cardsInExile)" :key="x" src="/img/cardback.png"
-                class="absolute z-10 w-48" :class="{
-                    '-top-[0px]': x === 1,
-                    '-top-[2px]': x === 2,
-                    '-top-[4px]': x === 3,
-                    '-top-[6px]': x === 4,
-                    '-top-[8px]': x === 5,
-                    '-top-[10px]': x === 6,
-                    '-top-[12px]': x === 7,
-                    '-top-[14px]': x === 8,
-                    '-top-[16px]': x === 9,
-                    '-top-[18px]': x >= 10,
+            <img v-for="(card, index) in exile" :key="card.id" :src="card.image" class="absolute z-10 w-48 rounded-xl"
+                :class="{
+                    '-top-[0px]': index === 0,
+                    '-top-[2px]': index === 1,
+                    '-top-[4px]': index === 2,
+                    '-top-[6px]': index === 3,
+                    '-top-[8px]': index === 4,
+                    '-top-[10px]': index === 5,
+                    '-top-[12px]': index === 6,
+                    '-top-[14px]': index === 7,
+                    '-top-[16px]': index === 8,
+                    '-top-[18px]': index >= 9,
                 }" />
         </div>
     </div>
@@ -54,15 +54,24 @@
 export default {
     name: "Exile",
 
+    props: [
+        'exile',
+    ],
+
     data: () => ({
         hovering: false,
-        cards: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
     }),
 
     computed: {
         cardsInExile() {
-            return 0;
-            return this.cards.length;
+            return this.exile.length;
+        },
+
+        exileRenderer() {
+            if (this.cardsInExile > 10) {
+                return this.exile.slice(0, 10);
+            }
+            return this.exile;
         }
     }
 }
