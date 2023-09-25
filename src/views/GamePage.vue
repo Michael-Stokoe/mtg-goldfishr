@@ -282,6 +282,7 @@ export default {
         },
 
         boardState() {
+            this.refreshKey;
             if (this.gameStarted) {
                 return this.game.opponent.boardState;
             }
