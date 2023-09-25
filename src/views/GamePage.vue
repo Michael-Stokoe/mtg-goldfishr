@@ -33,19 +33,19 @@
                     <div>
                         <p class="text-lg font-semibold">Library ({{ cardsInOpponentsLibrary }}):</p>
 
-                        <library :library="opponent.library" />
+                        <library :library="library" />
                     </div>
 
                     <div>
                         <p class="text-lg font-semibold">Graveyard ({{ cardsInOpponentsGraveyard }}):</p>
 
-                        <graveyard :graveyard="opponent.graveyard" />
+                        <graveyard :graveyard="graveyard" />
                     </div>
 
                     <div>
                         <p class="text-lg font-semibold">Exile ({{ cardsInOpponentsExile }}):</p>
 
-                        <exile :exile="opponent.exile" />
+                        <exile :exile="exile" />
                     </div>
                 </div>
             </div>
@@ -229,7 +229,32 @@ export default {
         },
 
         opponent() {
+            this.refreshKey;
             return this.gameExists ? this.game.opponent : null;
+        },
+
+        graveyard() {
+            this.refreshKey;
+            if (this.opponent) {
+                return this.opponent.graveyard;
+            }
+            return [];
+        },
+
+        library() {
+            this.refreshKey;
+            if (this.opponent) {
+                return this.opponent.library;
+            }
+            return [];
+        },
+
+        exile() {
+            this.refreshKey;
+            if (this.opponent) {
+                return this.opponent.exile;
+            }
+            return [];
         },
 
         showStartOpponentsTurnButton() {
@@ -257,7 +282,6 @@ export default {
         },
 
         boardState() {
-            this.refreshKey;
             if (this.gameStarted) {
                 return this.game.opponent.boardState;
             }
@@ -279,27 +303,28 @@ export default {
         },
 
         cardsInOpponentsLibrary() {
-            if (this.gameExists) {
-                return this.opponent.library.length;
+            if (this.opponent) {
+                return this.library.length;
             }
             return 0;
         },
 
         cardsInOpponentsGraveyard() {
-            if (this.gameExists) {
-                return this.opponent.graveyard.length;
+            if (this.opponent) {
+                return this.graveyard.length;
             }
             return 0;
         },
 
         cardsInOpponentsExile() {
-            if (this.gameExists) {
-                return this.opponent.exile.length;
+            if (this.opponent) {
+                return this.exile.length;
             }
             return 0;
         },
 
         stack() {
+            this.refreshKey;
             if (this.gameStarted) {
                 return this.game.stack.stack;
             }

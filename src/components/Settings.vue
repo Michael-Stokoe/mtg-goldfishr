@@ -46,10 +46,17 @@
 <script>
 export default {
     name: 'Settings',
+
     data: () => ({
         showSettings: false,
         autoResolveSpells: true,
         autoSubtract: true,
     }),
+
+    watch: {
+        autoResolveSpells: function (val) {
+            this.$events.emit('toggle-auto-resolve', val);
+        }
+    }
 }
 </script>

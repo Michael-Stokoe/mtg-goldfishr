@@ -6,6 +6,8 @@ export default class PseudoStack {
     stack = [];
     eventsBus = null;
 
+    autoResolveSpells = true;
+
     constructor () {
         this.stack = [];
 
@@ -16,8 +18,14 @@ export default class PseudoStack {
             this.opponent = gameParams.game.opponent;
         });
 
+        this.eventsBus.on('toggle-auto-resolve', autoResolve => this.autoResolveSpells = autoResolve);
+
         this.eventsBus.on('cast-card', card => {
             this.add(card);
+
+            if (this.autoResolveSpells) {
+                this.resolve();
+            }
         });
 
         this.eventsBus.on('current-card-resolves', resolves => {

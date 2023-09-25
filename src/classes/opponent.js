@@ -78,13 +78,13 @@ export default class Opponent {
     counterSpell(card) {
         this.graveyard.push(card);
 
-        console.log(this.graveyard)
+        // console.log(this.graveyard)
 
         // if (card.handlers.enterGraveyard.length > 0) {
         //     card.handlers.enterGraveyard.forEach(handler => handler.call(card));
         // }
 
-        // this.eventsBus.emit('refresh-state');
+        this.eventsBus.emit('refresh-state');
     }
 
     castTopSpellOfLibrary () {

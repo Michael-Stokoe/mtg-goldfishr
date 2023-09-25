@@ -33,8 +33,8 @@
 
             <img src="/img/emptyzone.png" class="flex w-48" />
 
-            <img v-for="(card, index) in graveyard" :key="card.id" :src="card.image" class="absolute z-10 w-48 rounded-xl"
-                :class="{
+            <img v-for="(card, index) in graveyardRenderer" :key="card.id" :src="card.image"
+                class="absolute z-10 w-48 rounded-xl" :class="{
                     '-top-[0px]': index === 0,
                     '-top-[2px]': index === 1,
                     '-top-[4px]': index === 2,
@@ -59,13 +59,13 @@ export default {
     ],
 
     mounted() {
-        // this.$events.on('refresh-state', () => {
-        //     this.refreshKey++;
-        // });
+        this.$events.on('refresh-state', () => {
+            this.refreshKey++;
+        });
     },
 
     unmounted() {
-        // this.$events.off('refresh-state');
+        this.$events.off('refresh-state');
     },
 
     data: () => ({
@@ -75,9 +75,13 @@ export default {
 
     computed: {
         graveyardRenderer() {
+            this.refreshKey;
+
             if (this.graveyard.length > 10) {
-                return this.graveyard.slice(0, 10);
+                let items = Object.assign([], this.graveyard);
+                return items.slice(0, 10);
             }
+
             return this.graveyard;
         }
     }

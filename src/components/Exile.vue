@@ -74,14 +74,14 @@ export default {
     }),
 
     computed: {
-        cardsInExile() {
-            return this.exile.length;
-        },
-
         exileRenderer() {
-            if (this.cardsInExile > 10) {
-                return this.exile.slice(0, 10);
+            this.refreshKey;
+
+            if (this.exile.length > 10) {
+                let items = Object.assign([], this.exile);
+                return items.slice(0, 10);
             }
+
             return this.exile;
         }
     }
