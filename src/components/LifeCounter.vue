@@ -68,6 +68,9 @@ export default {
 
     mounted() {
         this.currentLifeTotal = this.startingLife;
+
+        this.$events.on('gain-life', amount => this.currentLifeTotal += amount);
+        this.$events.on('lose-life', amount => this.currentLifeTotal -= amount);
     },
 
     data: () => ({

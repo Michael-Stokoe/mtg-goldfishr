@@ -79,7 +79,7 @@ export default {
 
             if (this.graveyard.length > 10) {
                 let items = Object.assign([], this.graveyard);
-                return items.slice(0, 10);
+                return items.slice(-10);
             }
 
             return this.graveyard;

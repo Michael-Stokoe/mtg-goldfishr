@@ -79,7 +79,7 @@ export default {
 
             if (this.exile.length > 10) {
                 let items = Object.assign([], this.exile);
-                return items.slice(0, 10);
+                return items.slice(-10);
             }
 
             return this.exile;

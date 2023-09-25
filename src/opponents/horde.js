@@ -127,7 +127,7 @@ export default class Horde extends Opponent {
             });
 
             card.handlers.enterGraveyard.push(function () {
-                // Each player gains 5 life.
+                this.eventsBus.emit('gain-life', 5);
             });
         }
 
