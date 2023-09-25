@@ -50,10 +50,11 @@
                 </div>
             </div>
 
-            <div>
+            <div class="flex flex-col space-y-4">
                 <div class="flex flex-col p-6 space-y-4 text-center bg-gray-700 rounded-lg">
                     <life-counter :startingLife="40" />
                 </div>
+                <settings />
             </div>
 
             <div class="flex flex-col col-span-3 mt-8 space-y-6">
@@ -146,6 +147,7 @@ import Graveyard from '../components/Graveyard.vue';
 import Exile from '../components/Exile.vue';
 import Btn from '../components/Btn.vue';
 import Card from '../components/Card.vue';
+import Settings from '../components/Settings.vue';
 
 export default {
     name: "GamePage",
@@ -157,6 +159,7 @@ export default {
         Exile,
         Btn,
         Card,
+        Settings,
     },
 
     data: () => ({
