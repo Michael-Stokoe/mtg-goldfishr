@@ -41,12 +41,16 @@ export default class Opponent {
         });
 
         this.eventsBus.on('exile-card', card => {
-            // let boardStateCardIds = this.boardState.map(card => card.id);
-            // let cardIndex = boardStateCardIds.indexOf(card.id);
-            // let cardObj = Object.assign({}, this.boardState[cardIndex]);
+            let boardState = self.boardState;
+            let boardStateCardIds = boardState.map(card => card.id);
+            let cardIndex = boardStateCardIds.indexOf(card.id);
 
-            // this.exile.push(cardObj);
-            // this.boardState.splice(cardIndex, 1);
+            self.exile.push(boardState[cardIndex]);
+            boardState.splice(cardIndex, 1);
+
+            self.boardState = boardState;
+
+            self.eventsBus.emit('refresh-state');
         });
 
         this.eventsBus.on('card-resolves', card => {

@@ -258,7 +258,7 @@ export default {
         },
 
         showStartOpponentsTurnButton() {
-            return (this.gameStarted && (this.game.firstPlayerChosen)) ? !(this.game.isOpponentTurn) : false;
+            return (this.gameStarted && (this.game.firstPlayerChosen)) // ? !(this.game.isOpponentTurn) : false;
         },
 
         showWhoseFirstQuestion() {
