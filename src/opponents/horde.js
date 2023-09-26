@@ -30,7 +30,16 @@ export default class Horde extends Opponent {
         this.castTopSpellOfLibrary();
         this.castTopSpellOfLibrary();
     }
-    
+
+    handleCombat() {
+        // declare attackers
+        // wait for declare blockers
+        // handle damage
+        // handle combat cleanup
+
+        // prompt for turn continuation
+    }
+
     handleEndStep() {
         this.nonPermanentsPlayed.forEach(card => {
             this.graveyard.push(card);
@@ -40,6 +49,8 @@ export default class Horde extends Opponent {
     }
 
     applyCardHandlers (card) {
+        var self = this;
+
         if (card.name === "Mogis's Chosen") {
             card.handlers.enterTheBattlefield.push(function () {
                 card.tapped = true;
@@ -48,7 +59,7 @@ export default class Horde extends Opponent {
 
         if (card.name === 'Reckless Minotaur') {
             card.handlers.end.push(function () {
-                this.eventsBus.emit('destroy-card', card);
+                self.eventsBus.emit('destroy-card', card);
             });
         }
 
@@ -57,13 +68,35 @@ export default class Horde extends Opponent {
                 // whenever a minotaur attacks this turn,
                 // it gets +2/+0 until end of turn.
                 // destroy that creature at the end of combat.
+
+                self.boardState.forEach(card => {
+                    if (card.superTypes.includes('Creature') && card.subTypes.includes('Minotaur')) {
+                        card.handlers.combat.beginning.push(function () {
+                            card.power += 2;
+                            self.eventsBus.emit('refresh-state');
+                        });
+
+                        card.handlers.combat.end.push(function (card) {
+                            self.destroyCard(card);
+                        });
+                    }
+                });
             });
         }
 
         if (card.name === 'Descend on the Prey') {
             card.handlers.cast.push(function () {
                 // Whenever a minotaur attacks this turn, it gains
-                // first strike and must be block this turn if able.
+                // first strike and must be blocked this turn if able. 
+
+                self.boardState.forEach(card => {
+                    if (card.superTypes.includes('Creature') && card.subTypes.includes('Minotaur')) {
+                        card.handlers.combat.beginning.push(function () {
+                            card.abilities.push('First Strike');
+                            self.eventsBus.emit('refresh-state');
+                        });
+                    }
+                });
             });
         }
 
@@ -71,6 +104,15 @@ export default class Horde extends Opponent {
             card.handlers.cast.push(function () {
                 // At the beginning of combat this turn,
                 // Intervention of Keranos deals 3 damage to each creature.
+
+                self.boardState.forEach(card => {
+                    if (card.superTypes.includes('Creature')) {
+                        card.handlers.combat.beginning.push(function () {
+                            card.damage += 3;
+                            self.eventsBus.emit('refresh-state');
+                        });
+                    }
+                });
             });
         }
 
@@ -78,17 +120,34 @@ export default class Horde extends Opponent {
             card.handlers.cast.push(function () {
                 // Whenever a minotaur attacks this turn, it gains
                 // deathtouch until end of turn.
+
+                self.boardState.forEach(card => {
+                    if (card.superTypes.includes('Creature')) {
+                        card.handlers.combat.beginning.push(function () {
+                            card.abilities.push('Deathtouch');
+                            self.eventsBus.emit('refresh-state');
+                        });
+                    }
+                });
             });
         }
 
         if (card.name === 'Unquenchable Fury') {
             card.handlers.cast.push(function () {
                 // Each Minotaur can't be blocked this turn except by two or more creatures.
+
+                self.boardState.forEach(card => {
+                    if (card.superTypes.includes('Creature')) {
+                        card.handlers.combat.beginning.push(function () {
+                            card.abilities.push('Menace');
+                            self.eventsBus.emit('refresh-state');
+                        });
+                    }
+                });
             });
         }
 
         if (card.name === 'Altar of Mogis') {
-            let self = this;
             card.handlers.main1.push(function () {
                 self.castTopSpellOfLibrary();
             });
@@ -99,7 +158,6 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Massacre Totem') {
-            let self = this;
             card.handlers.main1.push(function () {
                 self.castTopSpellOfLibrary();
             });
@@ -110,7 +168,6 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Plundered Statue') {
-            let self = this;
             card.handlers.main1.push(function () {
                 self.castTopSpellOfLibrary();
             });
@@ -121,13 +178,12 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Refreshing Elixir') {
-            let self = this;
             card.handlers.main1.push(function () {
                 self.castTopSpellOfLibrary();
             });
 
             card.handlers.enterGraveyard.push(function () {
-                this.eventsBus.emit('gain-life', 5);
+                self.eventsBus.emit('gain-life', 5);
             });
         }
 

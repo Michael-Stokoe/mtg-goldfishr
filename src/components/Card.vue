@@ -9,6 +9,17 @@
                     <p class="text-lg font-bold text-center text-white">{{ card.name }}</p>
 
                     <div class="flex flex-col space-y-1">
+
+                        <p @click="tapCard" v-if="!cardIsTapped"
+                            class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
+                            <i class="w-6 fa-solid fa-arrow-rotate-right"></i> <span>Tap</span>
+                        </p>
+
+                        <p @click="tapCard(false)" v-if="cardIsTapped"
+                            class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
+                            <i class="w-6 fa-solid fa-arrow-rotate-right"></i> <span>Untap</span>
+                        </p>
+
                         <p v-if="showBlockOptions"
                             class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
                             <i class="w-6 fa-solid fa-shield"></i> <span>Block</span>
@@ -32,10 +43,15 @@
                 </div>
             </div>
 
-            <div class="relative" :class="{
+            <div class="relative transition-transform" :class="{
                 'rotate-90 translate-x-10': cardIsTapped,
             }">
                 <img class="w-48 shadow-lg rounded-xl" :src="card.image" />
+
+                <div v-if="showAbilities"
+                    class="absolute flex flex-col px-2 py-1 space-x-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 left-3 rounded-xl">
+                    <span v-for="ability in abilities" :key="ability">{{ ability }}</span>
+                </div>
 
                 <div v-if="showPowerToughness"
                     class="absolute px-2 py-1 text-xs font-bold text-gray-900 bg-gray-200 rounded-xl bottom-2 right-3">
@@ -52,8 +68,17 @@ export default {
 
     props: ['card', 'hideOverlay'],
 
+    mounted() {
+        this.$events.on('refresh-state', () => this.refreshKey++);
+    },
+
+    unmounted() {
+        this.$events.off('refresh-state');
+    },
+
     data: () => ({
         hovering: false,
+        refreshKey: 0,
     }),
 
     computed: {
@@ -80,6 +105,19 @@ export default {
 
         showPowerToughness() {
             return this.card.superTypes.includes('Creature');
+        },
+
+        showAbilities() {
+            return this.card.superTypes.includes('Creature') && this.card.abilities.length > 0;
+        },
+
+        abilities() {
+            this.refreshKey;
+            if (this.card.abilities.length) {
+                return this.card.abilities;
+            }
+
+            return [];
         }
     },
 
@@ -91,6 +129,10 @@ export default {
         exileCard() {
             this.$events.emit('exile-card', this.card);
         },
+
+        tapCard(tapped = true) {
+            this.card.tapped = tapped;
+        }
     }
 }
 </script>

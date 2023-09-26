@@ -12,6 +12,7 @@ export default class Game {
     firstPlayerChosen = false;
     eventsBus = null;
     stack = null;
+    waitingToStartCombat = false;
 
     phases = [
         'untap',
@@ -83,8 +84,59 @@ export default class Game {
     }
 
     startOpponentTurn() {
+        this.isOpponentTurn = true;
         this.currentTurn++;
         // Untap step
+        this.currentPhase = 'untap';
+        this.runUntapHandlers();
+
+        // Upkeep step
+        this.currentPhase = 'upkeep';
+        this.runUpkeepHandlers();
+
+        // Draw step
+        this.currentPhase = 'draw';
+        this.runDrawHandlers();
+
+        // Main phase 1
+        this.currentPhase = 'main1';
+        this.runMainPhase1Handlers();
+        this.opponent.handleMainPhase1();
+
+        // wait for player to start Horde's combat phase
+        this.waitingToStartCombat = true;
+    }
+
+    startOpponentCombat() {
+        this.waitingToStartCombat = false;
+        this.currentPhase = 'combat';
+
+        this.runStartOfCombatHandlers();
+
+        this.opponent.handleCombat();
+    }
+
+    startOpponentPostCombatTurn() {
+        // main phase 2
+        this.currentPhase = 'main2';
+
+        if (this.opponent.handleMainPhase2){
+            this.opponent.handleMainPhase2();
+        }
+
+        // end step
+        this.currentPhase = 'end';
+        if (this.opponent.handleEndStep) {
+            this.opponent.handleEndStep();
+        }
+
+        // player turn
+        this.eventsBus.emit('opponent-turn-complete');
+        this.isOpponentTurn = false;
+        this.currentPhase = 'player-turn';
+    }
+
+    runUntapHandlers() {
         this.opponent.boardState.forEach(card => {
             card.tapped = false;
 
@@ -94,8 +146,9 @@ export default class Game {
                 });
             }
         });
+    }
 
-        // Upkeep step
+    runUpkeepHandlers() {
         this.opponent.boardState.forEach(card => {
             if (card.handlers.upkeep.length) {
                 card.handlers.upkeep.forEach(handler => {
@@ -103,8 +156,9 @@ export default class Game {
                 });
             }
         });
+    }
 
-        // Draw step
+    runDrawHandlers() {
         this.opponent.boardState.forEach(card => {
             if (card.handlers.draw.length) {
                 card.handlers.draw.forEach(handler => {
@@ -112,8 +166,9 @@ export default class Game {
                 });
             }
         });
+    }
 
-        // Main phase 1
+    runMainPhase1Handlers() {
         this.opponent.boardState.forEach(card => {
             if (card.handlers.main1.length) {
                 card.handlers.main1.forEach(handler => {
@@ -121,11 +176,24 @@ export default class Game {
                 });
             }
         });
+    }
 
-        this.opponent.handleMainPhase1();
+    runStartOfCombatHandlers() {
+        this.opponent.boardState.forEach(card => {
+            if (card.handlers.combat.beginning.length) {
+                card.handlers.combat.beginning.forEach(handler => {
+                    handler();
+                });
+            }
+        });
 
-        // Move to combat phase
-        this.eventsBus.emit('pre-combat-main-phase-complete');
+        this.opponent.nonPermanentsPlayed.forEach(card => {
+            if (card.handlers.combat.beginning.length) {
+                card.handlers.combat.beginning.forEach(handler => {
+                    handler();
+                });
+            }
+        });
     }
 
     advancePhase () {

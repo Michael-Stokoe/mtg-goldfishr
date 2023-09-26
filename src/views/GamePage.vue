@@ -88,41 +88,48 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col px-6 space-y-4">
-                        <div v-if="stack.length" class="flex flex-col mt-8 space-y-4">
-                            <p class="text-xl font-semibold">The opponent is casting...</p>
-                            <div class="flex space-x-4">
-                                <card :card="stack[0]" :hideOverlay="true" />
+                    <div v-if="stack.length" class="flex flex-col mt-8 space-y-4">
+                        <p class="text-xl font-semibold">The opponent is casting...</p>
+                        <div class="flex space-x-4">
+                            <card :card="stack[0]" :hideOverlay="true" />
 
-                                <div class="flex flex-col space-y-2 text-left">
-                                    <h2 class="text-xl font-semibold">{{ stack[0].name }}</h2>
+                            <div class="flex flex-col space-y-2 text-left">
+                                <h2 class="text-xl font-semibold">{{ stack[0].name }}</h2>
 
-                                    <p class="text-lg font-semibold">
-                                        {{ stack[0].superTypes.join(', ') }}
-                                        <span v-if="stack[0].superTypes.includes('Creature')">
-                                            - {{ stack[0].subTypes.join(', ') }}
-                                        </span>
-                                    </p>
+                                <p class="text-lg font-semibold">
+                                    {{ stack[0].superTypes.join(', ') }}
+                                    <span v-if="stack[0].superTypes.includes('Creature')">
+                                        - {{ stack[0].subTypes.join(', ') }}
+                                    </span>
+                                </p>
 
-                                    <p v-if="stack[0].superTypes.includes('Creature')" class="text-lg font-semibold">
-                                        {{ stack[0].power + '/' + stack[0].toughness }}
-                                    </p>
+                                <p v-if="stack[0].superTypes.includes('Creature')" class="text-lg font-semibold">
+                                    {{ stack[0].power + '/' + stack[0].toughness }}
+                                </p>
 
-                                    <p>Does it resolve?</p>
+                                <p>Does it resolve?</p>
 
-                                    <div class="flex space-x-2">
-                                        <btn :label="'Yes'" @click="currentCardResolves(true)" />
-                                        <btn :label="'No (Counter it)'" :colour="'red'"
-                                            @click="currentCardResolves(false)" />
-                                    </div>
+                                <div class="flex space-x-2">
+                                    <btn :label="'Yes'" @click="currentCardResolves(true)" />
+                                    <btn :label="'No (Counter it)'" :colour="'red'" @click="currentCardResolves(false)" />
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div v-if="nonPermanentsPlayed.length" class="py-6">
-                            <non-permanents-played :nonPermanents="nonPermanentsPlayed" />
+                    <div v-if="nonPermanentsPlayed.length" class="py-6 mx-6">
+                        <non-permanents-played :nonPermanents="nonPermanentsPlayed" />
+                    </div>
+
+
+                    <div v-if="showMoveToCombatButton" class="flex flex-col justify-center space-y-2 text-center">
+                        <p>The opponent would now like to move to combat, start opponent's combat phase?</p>
+                        <div>
+                            <btn :label="'Start Combat'" @click="startOpponentCombat" />
                         </div>
+                    </div>
 
+                    <div class="flex flex-col px-6 space-y-4">
                         <div v-if="boardStateArtifacts.length" class="flex flex-col mt-8 space-y-4">
                             <p class="text-xl font-semibold">Artifacts</p>
                             <div class="grid grid-cols-5 gap-4">
@@ -213,6 +220,10 @@ export default {
 
         currentCardResolves(resolves) {
             this.$events.emit('current-card-resolves', resolves);
+        },
+
+        startOpponentCombat() {
+            this.game.startOpponentCombat();
         }
     },
 
@@ -262,11 +273,24 @@ export default {
         },
 
         showStartOpponentsTurnButton() {
-            return (this.gameStarted && (this.game.firstPlayerChosen)) // ? !(this.game.isOpponentTurn) : false;
+            if (this.gameStarted && this.game.firstPlayerChosen) {
+                if (!this.game.isOpponentTurn) {
+                    return true;
+                }
+            }
+            // return (this.gameStarted && (this.game.firstPlayerChosen)) ? !(this.game.isOpponentTurn) : false;
         },
 
         showWhoseFirstQuestion() {
             return (this.gameStarted && this.game.currentTurn === null) ?? false;
+        },
+
+        showMoveToCombatButton() {
+            if (this.gameStarted && this.game.isOpponentTurn) {
+                return this.game.waitingToStartCombat;
+            }
+
+            return false;
         },
 
         isPlayersTurn() {

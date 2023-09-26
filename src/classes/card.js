@@ -11,6 +11,8 @@ export default class Card {
     isAttacking = false;
     power = null;
     toughness = null;
+    abilities = [];
+    damage = 0;
 
     eventsBus = null;
 

@@ -36,29 +36,11 @@ export default class Opponent {
         });
 
         this.eventsBus.on('destroy-card', card => {
-            let boardState = self.boardState;
-            let boardStateCardIds = boardState.map(card => card.id);
-            let cardIndex = boardStateCardIds.indexOf(card.id);
-
-            self.graveyard.push(boardState[cardIndex]);
-            boardState.splice(cardIndex, 1);
-
-            self.boardState = boardState;
-
-            self.eventsBus.emit('refresh-state');
+            this.destroyCard(card);
         });
 
         this.eventsBus.on('exile-card', card => {
-            let boardState = self.boardState;
-            let boardStateCardIds = boardState.map(card => card.id);
-            let cardIndex = boardStateCardIds.indexOf(card.id);
-
-            self.exile.push(boardState[cardIndex]);
-            boardState.splice(cardIndex, 1);
-
-            self.boardState = boardState;
-
-            self.eventsBus.emit('refresh-state');
+            this.exileCard(card);
         });
 
         this.eventsBus.on('card-resolves', card => {
@@ -74,6 +56,10 @@ export default class Opponent {
         if (card) {
             if (card.superTypes.includes('Sorcery') || card.superTypes.includes('Instant')) {
                 this.nonPermanentsPlayed.push(card);
+
+                if (card.handlers.cast.length > 0) {
+                    card.handlers.cast.forEach(handler => handler.call(card));
+                }
 
                 this.graveyard.push(card);
             } else {
@@ -117,5 +103,31 @@ export default class Opponent {
         }
 
         this.library = cards;
+    }
+
+    destroyCard(card) {
+        let boardState = self.boardState;
+        let boardStateCardIds = boardState.map(card => card.id);
+        let cardIndex = boardStateCardIds.indexOf(card.id);
+
+        self.graveyard.push(boardState[cardIndex]);
+        boardState.splice(cardIndex, 1);
+
+        self.boardState = boardState;
+
+        self.eventsBus.emit('refresh-state');
+    }
+
+    exileCard(card) {
+        let boardState = self.boardState;
+        let boardStateCardIds = boardState.map(card => card.id);
+        let cardIndex = boardStateCardIds.indexOf(card.id);
+
+        self.exile.push(boardState[cardIndex]);
+        boardState.splice(cardIndex, 1);
+
+        self.boardState = boardState;
+
+        self.eventsBus.emit('refresh-state');
     }
 }
