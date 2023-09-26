@@ -31,9 +31,17 @@
                     </div>
                 </div>
             </div>
-            <img class="w-48 shadow-lg rounded-xl" :src="card.image" :class="{
+
+            <div class="relative" :class="{
                 'rotate-90 translate-x-10': cardIsTapped,
-            }" />
+            }">
+                <img class="w-48 shadow-lg rounded-xl" :src="card.image" />
+
+                <div v-if="showPowerToughness"
+                    class="absolute px-2 py-1 text-xs font-bold text-gray-900 bg-gray-200 rounded-xl bottom-2 right-3">
+                    {{ card.power }} / {{ card.toughness }}
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -68,6 +76,10 @@ export default {
 
         cardIsTapped() {
             return this.card.tapped;
+        },
+
+        showPowerToughness() {
+            return this.card.superTypes.includes('Creature');
         }
     },
 

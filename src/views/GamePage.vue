@@ -119,6 +119,10 @@
                             </div>
                         </div>
 
+                        <div v-if="nonPermanentsPlayed.length" class="py-6">
+                            <non-permanents-played :nonPermanents="nonPermanentsPlayed" />
+                        </div>
+
                         <div v-if="boardStateArtifacts.length" class="flex flex-col mt-8 space-y-4">
                             <p class="text-xl font-semibold">Artifacts</p>
                             <div class="grid grid-cols-5 gap-4">
@@ -148,6 +152,7 @@ import Exile from '../components/Exile.vue';
 import Btn from '../components/Btn.vue';
 import Card from '../components/Card.vue';
 import Settings from '../components/Settings.vue';
+import NonPermanentsPlayed from '../components/NonPermanentsPlayed.vue';
 
 export default {
     name: "GamePage",
@@ -160,6 +165,7 @@ export default {
         Btn,
         Card,
         Settings,
+        NonPermanentsPlayed,
     },
 
     data: () => ({
@@ -176,9 +182,7 @@ export default {
 
         this.gameTitle = this.game.title;
 
-        this.$events.on('refresh-state', () => {
-            this.refreshKey++;
-        });
+        this.$events.on('refresh-state', () => this.refreshKey++);
     },
 
     unmounted() {
@@ -329,6 +333,16 @@ export default {
             if (this.gameStarted) {
                 return this.game.stack.stack;
             }
+            return [];
+        },
+
+        nonPermanentsPlayed() {
+            this.refreshKey;
+
+            if (this.opponent) {
+                return this.opponent.nonPermanentsPlayed;
+            }
+
             return [];
         }
     }

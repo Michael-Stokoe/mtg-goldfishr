@@ -8,7 +8,15 @@ export default class Opponent {
     exile = [];
 
     boardState = [];
-    combatStartHandlers = [];
+    phaseHandlers = {
+        untap: [],
+        upkeep: [],
+        draw: [],
+        combatStart: [],
+        combatEnd: [],
+        main: [],
+        end: [],
+    };
     nonPermanentsPlayed = [];
 
     eventsBus = null;
@@ -64,9 +72,10 @@ export default class Opponent {
 
     castSpell(card) {
         if (card) {
-            if (card.superTypes.includes('Sorcery')) {
-                this.combatStartHandlers.push(card);
+            if (card.superTypes.includes('Sorcery') || card.superTypes.includes('Instant')) {
                 this.nonPermanentsPlayed.push(card);
+
+                this.graveyard.push(card);
             } else {
                 this.boardState.push(card);
 
