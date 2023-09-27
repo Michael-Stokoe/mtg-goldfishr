@@ -31,16 +31,12 @@ export default class Horde extends Opponent {
     }
 
     handleMainPhase1 () {
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
+        // this.castTopSpellOfLibrary();
+        // this.castTopSpellOfLibrary();
+
+        for (var i = 0; i < 10; i++) {
+            this.castTopSpellOfLibrary();
+        }
     }
 
     handleCombat() {

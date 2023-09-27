@@ -9,6 +9,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import mitt from 'mitt';
 const emitter = mitt();
 
+
 const app = createApp(App);
 app.use(router).use(store).use(VueSweetalert2);
 app.config.globalProperties.$events = emitter;

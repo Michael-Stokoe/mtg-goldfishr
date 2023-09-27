@@ -76,16 +76,16 @@ export default {
     props: ['card', 'hideOverlay'],
 
     mounted() {
-        this.$events.on('refresh-state', () => this.refreshKey++);
+        // this.$events.on('refresh-state', () => this.refreshKey++);
     },
 
     unmounted() {
-        this.$events.off('refresh-state');
+        // this.$events.off('refresh-state');
     },
 
     data: () => ({
         hovering: false,
-        refreshKey: 0,
+        // refreshKey: 0,
     }),
 
     computed: {
@@ -119,7 +119,7 @@ export default {
         },
 
         abilities() {
-            this.refreshKey;
+            // this.refreshKey;
             if (this.card.abilities.length) {
                 return this.card.abilities;
             }

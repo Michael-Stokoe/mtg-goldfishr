@@ -58,30 +58,29 @@ export default {
         'graveyard',
     ],
 
+    data: () => ({
+        hovering: false,
+        refreshKey: 0,
+    }),
+
     mounted() {
-        this.$events.on('refresh-state', () => this.refreshKey++);
+        this.$events.on('refresh-state', () => {
+            this.refreshKey++;
+        });
     },
 
     unmounted() {
         this.$events.off('refresh-state');
     },
 
-    data: () => ({
-        refreshKey: 0,
-        hovering: false,
-    }),
-
     computed: {
         graveyardRenderer() {
             this.refreshKey;
-
             if (this.graveyard.length > 10) {
-                let items = Object.assign([], this.graveyard);
-                return items.slice(-10);
+                return this.graveyard.slice(-10);
             }
-
             return this.graveyard;
-        }
-    }
+        },
+    },
 }
 </script>

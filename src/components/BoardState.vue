@@ -26,6 +26,9 @@ export default {
     mounted() {
         this.$events.on('refresh-state', () => { this.refreshKey++ });
     },
+    unmounted() {
+        this.$events.off('refresh-state');
+    },
     components: {
         Card,
     },
@@ -33,19 +36,17 @@ export default {
         'game'
     ],
     computed: {
-        boardState() {
-            this.refreshKey;
-            return this.game.opponent.boardState;
-        },
         boardStateArtifacts() {
-            if (this.boardState.length > 0) {
-                return this.boardState.filter((card) => card.superTypes.includes('Artifact'));
+            this.refreshKey;
+            if (this.game.opponent.boardState.length > 0) {
+                return this.game.opponent.boardState.filter((card) => card.superTypes.includes('Artifact'));
             }
             return [];
         },
         boardStateCreatures() {
-            if (this.boardState.length > 0) {
-                return this.boardState.filter((card) => card.superTypes.includes('Creature'));
+            this.refreshKey;
+            if (this.game.opponent.boardState.length > 0) {
+                return this.game.opponent.boardState.filter((card) => card.superTypes.includes('Creature'));
             }
             return [];
         },

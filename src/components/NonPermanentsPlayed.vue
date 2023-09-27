@@ -22,22 +22,22 @@ export default {
     props: ['nonPermanents'],
 
     data: () => ({
-        refreshKey: 0,
+        // refreshKey: 0,
     }),
 
     methods: {},
 
     mounted() {
-        this.$events.on('refresh-state', () => this.refreshKey++);
+        // this.$events.on('refresh-state', () => this.refreshKey++);
     },
 
     unmounted() {
-        this.$events.off('refresh-state');
+        // this.$events.off('refresh-state');
     },
 
     computed: {
         nonPermanentsRenderer() {
-            this.refreshKey;
+            // this.refreshKey;
             return this.nonPermanents;
         }
     }

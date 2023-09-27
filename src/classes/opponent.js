@@ -20,9 +20,12 @@ export default class Opponent {
     eventsBus = null;
     alerts = null;
 
+    debounce = null;
+
     constructor () {
         this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
         this.alerts = getCurrentInstance().appContext.config.globalProperties.$swal;
+
         this.library = [];
         this.setDecklist();
         this.setupEvents();
@@ -120,8 +123,7 @@ export default class Opponent {
         let index = boardStateCardIds.indexOf(card.id);
 
         if (index === -1) {
-            console.log('CARD NOT FOUND');
-
+            this.eventsBus.emit('refresh-state');
             return;
         }
 

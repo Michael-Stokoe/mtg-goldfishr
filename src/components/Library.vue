@@ -60,20 +60,9 @@ export default {
         'library',
     ],
 
-    mounted() {
-        this.$events.on('refresh-state', () => this.refreshKey++);
-    },
-
-    unmounted() {
-        this.$events.off('refresh-state');
-    },
-
     data: () => ({
-        refreshKey: 0,
         hovering: false,
     }),
-
-    methods: {},
 
     computed: {
         cardsInLibrary() {

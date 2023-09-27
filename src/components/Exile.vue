@@ -57,19 +57,20 @@ export default {
     props: [
         'exile',
     ],
+    data: () => ({
+        hovering: false,
+        refreshKey: 0,
+    }),
 
     mounted() {
-        this.$events.on('refresh-state', () => this.refreshKey++);
+        this.$events.on('refresh-state', () => {
+            this.refreshKey++;
+        });
     },
 
     unmounted() {
         this.$events.off('refresh-state');
     },
-
-    data: () => ({
-        refreshKey: 0,
-        hovering: false,
-    }),
 
     computed: {
         exileRenderer() {
@@ -81,7 +82,7 @@ export default {
             }
 
             return this.exile;
-        }
+        },
     }
 }
 </script>

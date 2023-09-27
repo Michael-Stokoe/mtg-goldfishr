@@ -30,23 +30,7 @@
                 <h3 class="text-2xl font-semibold">Game Board</h3>
 
                 <div class="grid grid-cols-3 gap-4" v-if="game">
-                    <div>
-                        <p class="text-lg font-semibold">Library ({{ cardsInOpponentsLibrary }}):</p>
-
-                        <library :library="library" />
-                    </div>
-
-                    <div>
-                        <p class="text-lg font-semibold">Graveyard ({{ cardsInOpponentsGraveyard }}):</p>
-
-                        <graveyard :graveyard="graveyard" />
-                    </div>
-
-                    <div>
-                        <p class="text-lg font-semibold">Exile ({{ cardsInOpponentsExile }}):</p>
-
-                        <exile :exile="exile" />
-                    </div>
+                    <opponent-card-stacks :game="gameObject" />
                 </div>
             </div>
 
@@ -88,34 +72,7 @@
                         </div>
                     </div>
 
-                    <div v-if="stack.length" class="flex flex-col mt-8 space-y-4">
-                        <p class="text-xl font-semibold">The opponent is casting...</p>
-                        <div class="flex space-x-4">
-                            <card :card="stack[0]" :hideOverlay="true" />
-
-                            <div class="flex flex-col space-y-2 text-left">
-                                <h2 class="text-xl font-semibold">{{ stack[0].name }}</h2>
-
-                                <p class="text-lg font-semibold">
-                                    {{ stack[0].superTypes.join(', ') }}
-                                    <span v-if="stack[0].superTypes.includes('Creature')">
-                                        - {{ stack[0].subTypes.join(', ') }}
-                                    </span>
-                                </p>
-
-                                <p v-if="stack[0].superTypes.includes('Creature')" class="text-lg font-semibold">
-                                    {{ stack[0].power + '/' + stack[0].toughness }}
-                                </p>
-
-                                <p>Does it resolve?</p>
-
-                                <div class="flex space-x-2">
-                                    <btn :label="'Yes'" @click="currentCardResolves(true)" />
-                                    <btn :label="'No (Counter it)'" :colour="'red'" @click="currentCardResolves(false)" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <pseudo-stack :game="gameObject" />
 
                     <div v-if="nonPermanentsPlayed.length" class="py-6 mx-6">
                         <non-permanents-played :nonPermanents="nonPermanentsPlayed" />
@@ -143,7 +100,7 @@
                         </div>
                     </div>
 
-                    <board-state v-if="gameStarted" :game="game" />
+                    <board-state v-if="gameStarted" :game="gameObject" />
                 </div>
             </div>
         </div>
@@ -161,6 +118,8 @@ import Card from '../components/Card.vue';
 import Settings from '../components/Settings.vue';
 import NonPermanentsPlayed from '../components/NonPermanentsPlayed.vue';
 import BoardState from '../components/BoardState.vue';
+import OpponentCardStacks from '../components/OpponentCardStacks.vue';
+import PseudoStack from '../components/PseudoStack.vue';
 
 export default {
     name: "GamePage",
@@ -175,6 +134,8 @@ export default {
         Settings,
         NonPermanentsPlayed,
         BoardState,
+        OpponentCardStacks,
+        PseudoStack,
     },
 
     data: () => ({
@@ -191,7 +152,9 @@ export default {
 
         this.gameTitle = this.gameObject.title;
 
-        this.$events.on('refresh-state', () => { this.refreshKey++ });
+        this.$events.on('refresh-state', () => {
+            this.refreshKey++;
+        });
     },
 
     unmounted() {
@@ -217,10 +180,6 @@ export default {
 
         startOpponentTurn() {
             this.gameObject.startOpponentTurn();
-        },
-
-        currentCardResolves(resolves) {
-            this.$events.emit('current-card-resolves', resolves);
         },
 
         startOpponentCombat() {
@@ -249,34 +208,12 @@ export default {
             return this.gameObject ? this.gameObject.getGameRulesText() : '';
         },
 
-        graveyard() {
-            if (this.gameObject.opponent) {
-                return this.gameObject.opponent.graveyard;
-            }
-            return [];
-        },
-
-        library() {
-            if (this.gameObject.opponent) {
-                return this.gameObject.opponent.library;
-            }
-            return [];
-        },
-
-        exile() {
-            if (this.gameObject.opponent) {
-                return this.gameObject.opponent.exile;
-            }
-            return [];
-        },
-
         showStartOpponentsTurnButton() {
             if (this.gameStarted && this.gameObject.firstPlayerChosen) {
                 if (!this.gameObject.isOpponentTurn) {
                     return true;
                 }
             }
-            // return (this.gameStarted && (this.gameObject.firstPlayerChosen)) ? !(this.gameObject.isOpponentTurn) : false;
         },
 
         showWhoseFirstQuestion() {
@@ -307,44 +244,7 @@ export default {
             return (this.gameStarted && this.gameObject.currentTurn !== null) ? this.gameObject.currentTurn : 0;
         },
 
-        boardState() {
-            this.refreshKey;
-            if (this.gameStarted) return this.gameObject.opponent.boardState;
-            return [];
-        },
-
-        cardsInOpponentsLibrary() {
-            if (this.gameObject.opponent) {
-                return this.library.length;
-            }
-            return 0;
-        },
-
-        cardsInOpponentsGraveyard() {
-            if (this.gameObject.opponent) {
-                return this.graveyard.length;
-            }
-            return 0;
-        },
-
-        cardsInOpponentsExile() {
-            if (this.gameObject.opponent) {
-                return this.exile.length;
-            }
-            return 0;
-        },
-
-        stack() {
-            this.refreshKey;
-            if (this.gameStarted) {
-                return this.gameObject.stack.stack;
-            }
-            return [];
-        },
-
         nonPermanentsPlayed() {
-            this.refreshKey;
-
             if (this.gameStarted && this.gameObject.opponent) {
                 return this.gameObject.opponent.nonPermanentsPlayed;
             }
