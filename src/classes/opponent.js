@@ -38,6 +38,10 @@ export default class Opponent {
             this.destroyCard(card);
         });
 
+        this.eventsBus.on('destroy-card-no-refresh', card => {
+            this.destroyCard(card, false);
+        })
+
         this.eventsBus.on('exile-card', card => {
             this.exileCard(card);
         });
@@ -61,7 +65,7 @@ export default class Opponent {
                 this.nonPermanentsPlayed.push(card);
 
                 if (card.handlers.cast.length > 0) {
-                    card.handlers.cast.forEach(handler => handler.call(card));
+                    card.handlers.cast.forEach(handler => handler.call());
                 }
 
                 this.graveyard.push(card);
@@ -69,7 +73,7 @@ export default class Opponent {
                 this.boardState.push(card);
 
                 if (card.handlers.enterTheBattlefield.length > 0) {
-                    card.handlers.enterTheBattlefield.forEach(handler => handler.call(card));
+                    card.handlers.enterTheBattlefield.forEach(handler => handler.call());
                 }
             }
 
@@ -81,7 +85,7 @@ export default class Opponent {
         this.graveyard.push(card);
 
         if (card.handlers.enterGraveyard.length > 0) {
-            card.handlers.enterGraveyard.forEach(handler => handler.call(card));
+            card.handlers.enterGraveyard.forEach(handler => handler.call());
         }
 
         this.eventsBus.emit('refresh-state');
@@ -117,13 +121,15 @@ export default class Opponent {
         this.library = cards;
     }
 
-    destroyCard(card) {
+    destroyCard(card, refresh = true) {
         let boardState = this.boardState;
         let boardStateCardIds = boardState.map(card => card.id);
         let index = boardStateCardIds.indexOf(card.id);
 
         if (index === -1) {
-            this.eventsBus.emit('refresh-state');
+            if (refresh) {
+                this.eventsBus.emit('refresh-state');
+            }
             return;
         }
 
@@ -135,7 +141,9 @@ export default class Opponent {
 
         this.boardState = boardState;
 
-        this.eventsBus.emit('refresh-state');
+        if (refresh) {
+            this.eventsBus.emit('refresh-state');
+        }
     }
 
     exileCard(card) {

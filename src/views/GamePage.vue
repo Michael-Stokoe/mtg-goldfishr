@@ -67,8 +67,9 @@
                     <div v-if="showStartOpponentsTurnButton" class="flex flex-col justify-center space-y-2 text-center">
                         <p v-if="showFirstTurnText">Play out your desired amount of setup turns and hit the button below to
                             start the Opponent's first turn.</p>
+                        <p v-else>Once you've taken your turn, click the button below to start the opponent's turn.</p>
                         <div>
-                            <btn :label="'Start Opponent\'s Turn'" @click="startOpponentTurn" />
+                            <btn :label="'Start Opponent\'s Turn'" @click="startOpponentTurn" :colour="'green'" />
                         </div>
                     </div>
 
@@ -86,10 +87,11 @@
                         </div>
                     </div>
 
-                    <div v-if="waitingToStartPlayerTurn" class="flex flex-col justify-center space-y-2 text-center">
-                        <p>The opponent has now finished its turn. Click the button below to start your turn.</p>
+                    <div v-if="showBlockersDeclaredButton" class="flex flex-col justify-center space-y-2 text-center">
+                        <p>Once you've resolved your blocks and marked the opponent as blocked or blocked & dying, click the
+                            button below to continue.</p>
                         <div>
-                            <btn :label="'Start Your Turn'" @click="startPlayerTurn" />
+                            <btn :label="'Blockers Declared'" @click="blockersAreDeclared" />
                         </div>
                     </div>
 
@@ -161,12 +163,11 @@ export default {
         this.$events.off('refresh-state');
         this.$events.off('tap-card');
         this.$events.off('cast-card');
-        this.$events.off('game-started');
         this.$events.off('current-card-resolves');
         this.$events.off('destroy-card');
         this.$events.off('exile-card');
         this.$events.off('card-resolves');
-        this.$events.off('card-counteredd');
+        this.$events.off('card-countered');
     },
 
     methods: {
@@ -188,6 +189,10 @@ export default {
 
         startPlayerTurn() {
             this.gameObject.startPlayerTurn();
+        },
+
+        blockersAreDeclared() {
+            this.$events.emit('blockers-declared');
         },
     },
 
@@ -223,6 +228,14 @@ export default {
         showMoveToCombatButton() {
             if (this.gameStarted && this.gameObject.isOpponentTurn) {
                 return this.gameObject.waitingToStartCombat;
+            }
+
+            return false;
+        },
+
+        showBlockersDeclaredButton() {
+            if (this.gameStarted) {
+                return this.gameObject.currentPhase === 'combat';
             }
 
             return false;

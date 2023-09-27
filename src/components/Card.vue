@@ -56,12 +56,12 @@
                 }" />
 
                 <div v-if="showAbilities"
-                    class="absolute flex flex-col px-2 py-1 space-x-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 left-3 rounded-xl">
+                    class="absolute flex flex-col px-2 py-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 left-3 rounded-xl">
                     <span v-for="ability in abilities" :key="ability">{{ ability }}</span>
                 </div>
 
                 <div v-if="showBlocked"
-                    class="absolute flex flex-col px-2 py-1 space-x-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 right-3 rounded-xl">
+                    class="absolute flex flex-col px-2 py-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 right-3 rounded-xl">
                     <span v-if="card.isBlocked">Blocked</span>
                     <span v-if="card.isBlockedAndDying">Lethal Blocked</span>
                 </div>

@@ -12,6 +12,7 @@ export default class Game {
     firstPlayerChosen = false;
     stack = null;
     waitingToStartCombat = false;
+    waitingForDeclareBlockers = false;
     waitingToStartPlayerTurn = false;
     eventsBus = null;
     alerts = null;
@@ -35,6 +36,10 @@ export default class Game {
 
         this.eventsBus.on('waiting-to-start-player-turn', () => {
             this.waitingToStartPlayerTurn = true;
+        });
+
+        this.eventsBus.on('set-phase', (phase) => {
+            this.currentPhase = phase;
         });
     }
 
@@ -74,9 +79,6 @@ export default class Game {
 
     startGame () {
         this.started = true;
-        this.eventsBus.emit('game-started', {
-            game: this,
-        });
         this.opponent.setupStartingBoardState();
     }
 
@@ -123,8 +125,6 @@ export default class Game {
     startOpponentCombat() {
         this.waitingToStartCombat = false;
         this.currentPhase = 'combat';
-
-        this.runStartOfCombatHandlers();
 
         this.opponent.handleCombat();
     }
@@ -185,24 +185,6 @@ export default class Game {
         this.opponent.boardState.forEach(card => {
             if (card.handlers.main1.length) {
                 card.handlers.main1.forEach(handler => {
-                    handler();
-                });
-            }
-        });
-    }
-
-    runStartOfCombatHandlers() {
-        this.opponent.boardState.forEach(card => {
-            if (card.handlers.combat.beginning.length) {
-                card.handlers.combat.beginning.forEach(handler => {
-                    handler();
-                });
-            }
-        });
-
-        this.opponent.nonPermanentsPlayed.forEach(card => {
-            if (card.handlers.combat.beginning.length) {
-                card.handlers.combat.beginning.forEach(handler => {
                     handler();
                 });
             }

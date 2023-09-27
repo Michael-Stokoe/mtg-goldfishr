@@ -1,8 +1,6 @@
 import { getCurrentInstance } from "vue";
 
 export default class PseudoStack {
-    game = null;
-    opponent = null;
     stack = [];
     eventsBus = null;
     alerts = null;
@@ -14,11 +12,6 @@ export default class PseudoStack {
 
         this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
         this.alerts = getCurrentInstance().appContext.config.globalProperties.$swal;
-
-        this.eventsBus.on('game-started', gameParams => {
-            this.game = gameParams.game;
-            this.opponent = gameParams.game.opponent;
-        });
 
         this.eventsBus.on('toggle-auto-resolve', autoResolve => this.autoResolveSpells = autoResolve);
 

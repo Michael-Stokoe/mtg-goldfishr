@@ -31,36 +31,41 @@ export default class Horde extends Opponent {
     }
 
     handleMainPhase1 () {
-        this.castTopSpellOfLibrary();
-        this.castTopSpellOfLibrary();
+        // this.castTopSpellOfLibrary();
+        // this.castTopSpellOfLibrary();
 
-        // for (var i = 0; i < 10; i++) {
-        //     this.castTopSpellOfLibrary();
-        // }
+        for (var i = 0; i < 10; i++) {
+            this.castTopSpellOfLibrary();
+        }
     }
 
     handleCombat() {
+        this.nonPermanentsPlayed.forEach(card => {
+            card.handlers.combat.beginning.forEach(handler => handler.call());
+        });
+
         // declare attackers
         this.boardState.forEach(card => {
             if (card.superTypes.includes('Creature')) {
                 if (!card.tapped) {
                     card.declareAsAttacker();
 
-                    card.handlers.combat.declareAttackers.forEach(handler => handler.call(card));
+                    card.handlers.combat.declareAttackers.forEach(handler => handler.call());
+                    card.handlers.combat.beginning.forEach(handler => handler.call());
                 }
             }
         });
-        // wait for declare blockers
 
-        if (this.boardState.filter(card => card.isAttacking).length > 0) {
-            this.alerts('The Horde is attacking!', 'Declare your blocks by clicking either "Block" or "Lethal Block". Attacking creatures are highlighted red.', 'info');
-        }
+
+        // wait for declare blockers
+        this.waitingForDeclareBlockers = true;
+        this.alerts('The Horde is attacking!', 'Declare your blocks by clicking either "Block" or "Lethal Block". Attacking creatures are highlighted red.', 'info');
     }
 
     handleBlockersDeclared() {
         this.boardState.forEach(card => {
             if (card.isAttacking) {
-                card.handlers.combat.declareBlockers.forEach(handler => handler.call(card));
+                card.handlers.combat.declareBlockers.forEach(handler => handler.call());
 
                 if (card.isBlockedAndDying) {
                     this.eventsBus.emit('destroy-card', card);
@@ -72,7 +77,17 @@ export default class Horde extends Opponent {
             }
         });
 
+        // Move to combat cleanup phase
+
+        this.waitingForDeclareBlockers = false;
+
+        this.boardState.forEach(card => {
+            card.handlers.combat.end.forEach(handler => handler.call());
+        });
+
         // this.game.currentPhase = 'end';
+        this.eventsBus.emit('set-phase', 'end');
+        this.eventsBus.emit('refresh-state');
         this.handleEndStep();
     }
 
@@ -82,13 +97,13 @@ export default class Horde extends Opponent {
             card.isBlocked = false;
             card.isBlockedAndDying = false;
 
-            card.handlers.combat.end.forEach(handler => handler.call(card));
-            card.handlers.end.forEach(handler => handler.call(card));
+            card.handlers.combat.end.forEach(handler => handler.call());
+            card.handlers.end.forEach(handler => handler.call());
         });
 
         this.nonPermanentsPlayed = [];
 
-        // this.game.waitingToStartPlayerTurn = true;
+        this.eventsBus.emit('refresh-state');
         this.eventsBus.emit('waiting-to-start-player-turn');
     }
 
@@ -108,20 +123,19 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Consuming Rage') {
-            card.handlers.cast.push(function () {
+            card.handlers.combat.beginning.push(function () {
                 // whenever a minotaur attacks this turn,
                 // it gets +2/+0 until end of turn.
                 // destroy that creature at the end of combat.
 
                 self.boardState.forEach(card => {
-                    if (card.superTypes.includes('Creature') && card.subTypes.includes('Minotaur')) {
-                        card.handlers.combat.beginning.push(function () {
-                            card.power += 2;
-                            self.eventsBus.emit('refresh-state');
-                        });
+                    if (card.superTypes.includes('Creature') && card.subTypes.includes('Minotaur') && card.isAttacking) {
+                        card.power += 2;
 
-                        card.handlers.combat.end.push(function (card) {
-                            self.destroyCard(card);
+                        card.handlers.combat.end.push(function () {
+                            card.power -= 2;
+
+                            self.destroyCard(card, false);
                         });
                     }
                 });
@@ -129,20 +143,16 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Descend on the Prey') {
-            card.handlers.cast.push(function () {
+            card.handlers.combat.beginning.push(function () {
                 // Whenever a minotaur attacks this turn, it gains
                 // first strike and must be blocked this turn if able. 
 
                 self.boardState.forEach(card => {
-                    if (card.superTypes.includes('Creature') && card.subTypes.includes('Minotaur')) {
-                        card.handlers.combat.beginning.push(function () {
-                            card.abilities.push('First Strike');
-                            self.eventsBus.emit('refresh-state');
-                        });
+                    if (card.superTypes.includes('Creature')) {
+                        card.abilities.push('First Strike');
 
                         card.handlers.combat.end.push(function () {
                             card.abilities = card.abilities.filter(ability => ability !== 'First Strike');
-                            self.eventsBus.emit('refresh-state');
                         });
                     }
                 });
@@ -150,20 +160,15 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Intervention of Keranos') {
-            card.handlers.cast.push(function () {
+            card.handlers.combat.beginning.push(function () {
                 // At the beginning of combat this turn,
                 // Intervention of Keranos deals 3 damage to each creature.
 
                 self.boardState.forEach(card => {
                     if (card.superTypes.includes('Creature')) {
-                        card.handlers.combat.beginning.push(function () {
-                            card.damage += 3;
-                            self.eventsBus.emit('refresh-state');
-                        });
-
+                        card.damage += 3;
                         card.handlers.end.push(function () {
                             card.damage -= 3;
-                            self.eventsBus.emit('refresh-state');
                         });
                     }
                 });
@@ -171,20 +176,17 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Touch of the Horned God') {
-            card.handlers.cast.push(function () {
+            card.handlers.combat.beginning.push(function () {
                 // Whenever a minotaur attacks this turn, it gains
                 // deathtouch until end of turn.
 
                 self.boardState.forEach(card => {
                     if (card.superTypes.includes('Creature')) {
-                        card.handlers.combat.beginning.push(function () {
-                            card.abilities.push('Deathtouch');
-                            self.eventsBus.emit('refresh-state');
-                        });
+                        card.abilities.push('Deathtouch');
+                        self.eventsBus.emit('refresh-state');
 
                         card.handlers.combat.end.push(function () {
                             card.abilities = card.abilities.filter(ability => ability !== 'Deathtouch');
-                            self.eventsBus.emit('refresh-state');
                         });
                     }
                 });
@@ -192,19 +194,15 @@ export default class Horde extends Opponent {
         }
 
         if (card.name === 'Unquenchable Fury') {
-            card.handlers.cast.push(function () {
+            card.handlers.combat.beginning.push(function () {
                 // Each Minotaur can't be blocked this turn except by two or more creatures.
 
                 self.boardState.forEach(card => {
                     if (card.superTypes.includes('Creature')) {
-                        card.handlers.combat.beginning.push(function () {
-                            card.abilities.push('Menace');
-                            self.eventsBus.emit('refresh-state');
-                        });
+                        card.abilities.push('Menace');
 
                         card.handlers.combat.end.push(function () {
                             card.abilities = card.abilities.filter(ability => ability !== 'Menace');
-                            self.eventsBus.emit('refresh-state');
                         });
                     }
                 });
