@@ -10,9 +10,11 @@ export default class Game {
     started = false;
     isOpponentTurn = false;
     firstPlayerChosen = false;
-    eventsBus = null;
     stack = null;
     waitingToStartCombat = false;
+    waitingToStartPlayerTurn = false;
+    eventsBus = null;
+    alerts = null;
 
     phases = [
         'untap',
@@ -26,9 +28,14 @@ export default class Game {
 
     constructor (game) {
         this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
+        this.alerts = getCurrentInstance().appContext.config.globalProperties.$swal;
         this.setTitle(game);
         this.setOpponent(game);
         this.stack = new PseudoStack();
+
+        this.eventsBus.on('waiting-to-start-player-turn', () => {
+            this.waitingToStartPlayerTurn = true;
+        });
     }
 
     setTitle (game) {
@@ -71,6 +78,12 @@ export default class Game {
             game: this,
         });
         this.opponent.setupStartingBoardState();
+    }
+
+    startPlayerTurn() {
+        this.isOpponentTurn = false;
+        this.waitingToStartPlayerTurn = false;
+        this.isPlayersTurn = true;
     }
 
     setPlayerFirstAndStart(first) {

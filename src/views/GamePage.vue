@@ -129,21 +129,21 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col px-6 space-y-4">
-                        <div v-if="boardStateArtifacts.length" class="flex flex-col mt-8 space-y-4">
-                            <p class="text-xl font-semibold">Artifacts</p>
-                            <div class="grid grid-cols-5 gap-4">
-                                <card v-for="card in boardStateArtifacts" :key="card.id" :card="card" />
-                            </div>
-                        </div>
-
-                        <div v-if="boardStateCreatures.length" class="flex flex-col mt-8 space-y-4">
-                            <p class="text-xl font-semibold">Creatures</p>
-                            <div class="grid grid-cols-5 gap-4">
-                                <card v-for="card in boardStateCreatures" :key="card.id" :card="card" />
-                            </div>
+                    <div v-if="waitingToStartPlayerTurn" class="flex flex-col justify-center space-y-2 text-center">
+                        <p>The opponent has now finished its turn. Click the button below to start your turn.</p>
+                        <div>
+                            <btn :label="'Start Your Turn'" @click="startPlayerTurn" />
                         </div>
                     </div>
+
+                    <div v-if="waitingToStartPlayerTurn" class="flex flex-col justify-center space-y-2 text-center">
+                        <p>The opponent has now finished its turn. Click the button below to start your turn.</p>
+                        <div>
+                            <btn :label="'Start Your Turn'" @click="startPlayerTurn" />
+                        </div>
+                    </div>
+
+                    <board-state v-if="gameStarted" :game="game" />
                 </div>
             </div>
         </div>
@@ -160,6 +160,7 @@ import Btn from '../components/Btn.vue';
 import Card from '../components/Card.vue';
 import Settings from '../components/Settings.vue';
 import NonPermanentsPlayed from '../components/NonPermanentsPlayed.vue';
+import BoardState from '../components/BoardState.vue';
 
 export default {
     name: "GamePage",
@@ -173,6 +174,7 @@ export default {
         Card,
         Settings,
         NonPermanentsPlayed,
+        BoardState,
     },
 
     data: () => ({
@@ -187,9 +189,9 @@ export default {
     mounted() {
         this.game = new Game(this.$route.params.game);
 
-        this.gameTitle = this.game.title;
+        this.gameTitle = this.gameObject.title;
 
-        this.$events.on('refresh-state', () => this.refreshKey++);
+        this.$events.on('refresh-state', () => { this.refreshKey++ });
     },
 
     unmounted() {
@@ -202,20 +204,19 @@ export default {
         this.$events.off('exile-card');
         this.$events.off('card-resolves');
         this.$events.off('card-counteredd');
-
     },
 
     methods: {
         startGame() {
-            this.game.startGame();
+            this.gameObject.startGame();
         },
 
         setPlayerFirst(first) {
-            this.game.setPlayerFirstAndStart(first);
+            this.gameObject.setPlayerFirstAndStart(first);
         },
 
         startOpponentTurn() {
-            this.game.startOpponentTurn();
+            this.gameObject.startOpponentTurn();
         },
 
         currentCardResolves(resolves) {
@@ -223,130 +224,111 @@ export default {
         },
 
         startOpponentCombat() {
-            this.game.startOpponentCombat();
-        }
+            this.gameObject.startOpponentCombat();
+        },
+
+        startPlayerTurn() {
+            this.gameObject.startPlayerTurn();
+        },
     },
 
     computed: {
-        gameExists() {
+        gameObject() {
+            this.refreshKey;
             return this.game;
         },
 
         gameStarted() {
-            if (this.gameExists) {
-                return this.game.started;
+            if (this.gameObject) {
+                return this.gameObject.started;
             }
             return false;
         },
 
         gameRulesText() {
-            return this.gameExists ? this.game.getGameRulesText() : '';
-        },
-
-        opponent() {
-            this.refreshKey;
-            return this.gameExists ? this.game.opponent : null;
+            return this.gameObject ? this.gameObject.getGameRulesText() : '';
         },
 
         graveyard() {
-            this.refreshKey;
-            if (this.opponent) {
-                return this.opponent.graveyard;
+            if (this.gameObject.opponent) {
+                return this.gameObject.opponent.graveyard;
             }
             return [];
         },
 
         library() {
-            this.refreshKey;
-            if (this.opponent) {
-                return this.opponent.library;
+            if (this.gameObject.opponent) {
+                return this.gameObject.opponent.library;
             }
             return [];
         },
 
         exile() {
-            this.refreshKey;
-            if (this.opponent) {
-                return this.opponent.exile;
+            if (this.gameObject.opponent) {
+                return this.gameObject.opponent.exile;
             }
             return [];
         },
 
         showStartOpponentsTurnButton() {
-            if (this.gameStarted && this.game.firstPlayerChosen) {
-                if (!this.game.isOpponentTurn) {
+            if (this.gameStarted && this.gameObject.firstPlayerChosen) {
+                if (!this.gameObject.isOpponentTurn) {
                     return true;
                 }
             }
-            // return (this.gameStarted && (this.game.firstPlayerChosen)) ? !(this.game.isOpponentTurn) : false;
+            // return (this.gameStarted && (this.gameObject.firstPlayerChosen)) ? !(this.gameObject.isOpponentTurn) : false;
         },
 
         showWhoseFirstQuestion() {
-            return (this.gameStarted && this.game.currentTurn === null) ?? false;
+            return (this.gameStarted && this.gameObject.currentTurn === null) ?? false;
         },
 
         showMoveToCombatButton() {
-            if (this.gameStarted && this.game.isOpponentTurn) {
-                return this.game.waitingToStartCombat;
+            if (this.gameStarted && this.gameObject.isOpponentTurn) {
+                return this.gameObject.waitingToStartCombat;
             }
 
             return false;
         },
 
         isPlayersTurn() {
-            return (this.gameStarted && this.game.isOpponentTurn === false) ?? false;
+            return (this.gameStarted && this.gameObject.isOpponentTurn === false) ?? false;
         },
 
         showFirstTurnText() {
-            return (this.gameStarted && this.game.currentTurn === 0 && this.game.firstPlayerChosen && !this.game.isOpponentTurn) ?? false;
+            return (this.gameStarted && this.gameObject.currentTurn === 0 && this.gameObject.firstPlayerChosen && !this.gameObject.isOpponentTurn) ?? false;
         },
 
         showCurrentTurnNumber() {
-            return (this.gameStarted && this.game.currentTurn !== null) ?? false;
+            return (this.gameStarted && this.gameObject.currentTurn !== null) ?? false;
         },
 
         currentTurn() {
-            return (this.gameStarted && this.game.currentTurn !== null) ? this.game.currentTurn : 0;
+            return (this.gameStarted && this.gameObject.currentTurn !== null) ? this.gameObject.currentTurn : 0;
         },
 
         boardState() {
             this.refreshKey;
-            if (this.gameStarted) {
-                return this.game.opponent.boardState;
-            }
-            return [];
-        },
-
-        boardStateArtifacts() {
-            if (this.gameStarted) {
-                return this.boardState.filter((card) => card.superTypes.includes('Artifact'));
-            }
-            return [];
-        },
-
-        boardStateCreatures() {
-            if (this.gameStarted) {
-                return this.boardState.filter((card) => card.superTypes.includes('Creature'));
-            }
+            if (this.gameStarted) return this.gameObject.opponent.boardState;
             return [];
         },
 
         cardsInOpponentsLibrary() {
-            if (this.opponent) {
+            if (this.gameObject.opponent) {
                 return this.library.length;
             }
             return 0;
         },
 
         cardsInOpponentsGraveyard() {
-            if (this.opponent) {
+            if (this.gameObject.opponent) {
                 return this.graveyard.length;
             }
             return 0;
         },
 
         cardsInOpponentsExile() {
-            if (this.opponent) {
+            if (this.gameObject.opponent) {
                 return this.exile.length;
             }
             return 0;
@@ -355,7 +337,7 @@ export default {
         stack() {
             this.refreshKey;
             if (this.gameStarted) {
-                return this.game.stack.stack;
+                return this.gameObject.stack.stack;
             }
             return [];
         },
@@ -363,11 +345,27 @@ export default {
         nonPermanentsPlayed() {
             this.refreshKey;
 
-            if (this.opponent) {
-                return this.opponent.nonPermanentsPlayed;
+            if (this.gameStarted && this.gameObject.opponent) {
+                return this.gameObject.opponent.nonPermanentsPlayed;
             }
 
             return [];
+        },
+
+        waitingToStartPlayerTurn() {
+            if (this.gameStarted) {
+                return this.gameObject.waitingToStartPlayerTurn;
+            }
+
+            return false;
+        },
+
+        isPlayersTurn() {
+            if (this.gameStarted) {
+                return this.gameObject.isPlayersTurn;
+            }
+
+            return false;
         }
     }
 }

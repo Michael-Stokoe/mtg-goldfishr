@@ -1,8 +1,6 @@
 import { getCurrentInstance } from "vue";
 
 export default class Opponent {
-    game = null;
-
     library = [];
     graveyard = [];
     exile = [];
@@ -20,9 +18,11 @@ export default class Opponent {
     nonPermanentsPlayed = [];
 
     eventsBus = null;
+    alerts = null;
 
     constructor () {
         this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
+        this.alerts = getCurrentInstance().appContext.config.globalProperties.$swal;
         this.library = [];
         this.setDecklist();
         this.setupEvents();
@@ -30,10 +30,6 @@ export default class Opponent {
 
     setupEvents() {
         let self = this;
-
-        this.eventsBus.on('game-started', gameParams => {
-            self.game = gameParams.game;
-        });
 
         this.eventsBus.on('destroy-card', card => {
             this.destroyCard(card);
@@ -49,6 +45,10 @@ export default class Opponent {
 
         this.eventsBus.on('card-countered', card => {
             self.counterSpell(card);
+        });
+
+        this.eventsBus.on('mill-cards', amount => {
+            self.millCards(amount);
         });
     }
 
@@ -92,6 +92,15 @@ export default class Opponent {
         }
     }
 
+    millCards(amount) {
+        let self = this;
+        let cards = this.library.splice(0, amount);
+
+        cards.forEach(card => {
+            self.graveyard.push(card);
+        });
+    }
+
     shuffleLibrary () {
         let cards = Object.assign(this.library, []);
 
@@ -106,28 +115,38 @@ export default class Opponent {
     }
 
     destroyCard(card) {
-        let boardState = self.boardState;
+        let boardState = this.boardState;
         let boardStateCardIds = boardState.map(card => card.id);
-        let cardIndex = boardStateCardIds.indexOf(card.id);
+        let index = boardStateCardIds.indexOf(card.id);
 
-        self.graveyard.push(boardState[cardIndex]);
-        boardState.splice(cardIndex, 1);
+        if (index === -1) {
+            console.log('CARD NOT FOUND');
 
-        self.boardState = boardState;
+            return;
+        }
 
-        self.eventsBus.emit('refresh-state');
+        this.graveyard.push(boardState[index]);
+
+        boardState[index].handlers.enterGraveyard.forEach(handler => handler.call(this.boardState[index]));
+
+        boardState.splice(index, 1);
+
+        this.boardState = boardState;
+
+        this.eventsBus.emit('refresh-state');
     }
 
     exileCard(card) {
-        let boardState = self.boardState;
+        let boardState = this.boardState;
         let boardStateCardIds = boardState.map(card => card.id);
-        let cardIndex = boardStateCardIds.indexOf(card.id);
+        let index = boardStateCardIds.indexOf(card.id);
 
-        self.exile.push(boardState[cardIndex]);
-        boardState.splice(cardIndex, 1);
+        this.exile.push(boardState[index]);
 
-        self.boardState = boardState;
+        boardState.splice(index, 1);
 
-        self.eventsBus.emit('refresh-state');
+        this.boardState = boardState;
+
+        this.eventsBus.emit('refresh-state');
     }
 }

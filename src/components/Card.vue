@@ -1,10 +1,10 @@
 <template>
     <div class="flex">
-        <div class="relative" @mouseenter="hovering = true" @mouseleave="hovering = false" :class="{
-            'ring-red-600 ring-[5px] rounded-xl': isAttacking,
-        }">
+        <div class="relative" @mouseenter="hovering = true" @mouseleave="hovering = false">
             <div v-if="hovering && !hideOverlay"
-                class="absolute top-0 left-0 z-50 w-full h-full bg-black rounded-xl opacity-80">
+                class="absolute top-0 left-0 z-50 w-full h-full transition-transform bg-black rounded-xl opacity-80" :class="{
+                    'rotate-90 translate-x-10': cardIsTapped,
+                }">
                 <div class="flex flex-col justify-center h-full space-y-4">
                     <p class="text-lg font-bold text-center text-white">{{ card.name }}</p>
 
@@ -15,9 +15,14 @@
                             <i class="w-6 fa-solid fa-arrow-rotate-right"></i> <span>Tap</span>
                         </p>
 
-                        <p @click="tapCard(false)" v-if="cardIsTapped"
+                        <p @click="untapCard" v-if="cardIsTapped"
                             class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
-                            <i class="w-6 fa-solid fa-arrow-rotate-right"></i> <span>Untap</span>
+                            <i class="w-6 fa-solid fa-arrow-rotate-left"></i> <span>Untap</span>
+                        </p>
+
+                        <p @click="removeFromCombat" v-if="cardIsTapped && isAttacking"
+                            class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
+                            <i class="w-6 fa-solid fa-arrow-rotate-left"></i> <span>Remove from Combat</span>
                         </p>
 
                         <p v-if="showBlockOptions"
@@ -46,7 +51,9 @@
             <div class="relative transition-transform" :class="{
                 'rotate-90 translate-x-10': cardIsTapped,
             }">
-                <img class="w-48 shadow-lg rounded-xl" :src="card.image" />
+                <img class="w-48 shadow-lg rounded-xl" :src="card.image" :class="{
+                    'ring-red-600 ring-[5px] rounded-xl': isAttacking,
+                }" />
 
                 <div v-if="showAbilities"
                     class="absolute flex flex-col px-2 py-1 space-x-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 left-3 rounded-xl">
@@ -130,8 +137,17 @@ export default {
             this.$events.emit('exile-card', this.card);
         },
 
-        tapCard(tapped = true) {
-            this.card.tapped = tapped;
+        tapCard() {
+            this.card.tapped = true;
+        },
+
+        untapCard() {
+            this.card.tapped = false;
+        },
+
+        removeFromCombat() {
+            this.card.isAttacking = false;
+            this.card.tapped = false;
         }
     }
 }

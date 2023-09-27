@@ -5,13 +5,17 @@ import Card from '../classes/card.js';
 export default class Horde extends Opponent {
     constructor () {
         super();
+
+        this.eventsBus.on('blockers-declared', () => {
+            this.handleBlockersDeclared();
+        });
     }
 
     setDecklist () {
         let self = this;
         decklist.forEach(function (card) {
             for (var i = 0; i < card.count; i++) {
-                let newCard = new Card(card.name, card.superTypes, card.subTypes, 0, card.image, card.power, card.toughness);
+                let newCard = new Card(card.name, card.superTypes, card.subTypes, 0, card.image, card.power, card.toughness, card.ranking);
 
                 self.applyCardHandlers(newCard);
 
@@ -29,23 +33,67 @@ export default class Horde extends Opponent {
     handleMainPhase1 () {
         this.castTopSpellOfLibrary();
         this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
+        this.castTopSpellOfLibrary();
     }
 
     handleCombat() {
         // declare attackers
-        // wait for declare blockers
-        // handle damage
-        // handle combat cleanup
+        this.boardState.forEach(card => {
+            if (card.superTypes.includes('Creature')) {
+                if (!card.tapped) {
+                    card.declareAsAttacker();
 
-        // prompt for turn continuation
+                    card.handlers.combat.declareAttackers.forEach(handler => handler.call(card));
+                }
+            }
+        });
+        // wait for declare blockers
+
+        if (this.boardState.filter(card => card.isAttacking).length > 0) {
+            this.alerts('The Horde is attacking!', 'Declare your blocks by clicking either "Block" or "Lethal Block". Attacking creatures are highlighted red.', 'info');
+        }
+    }
+
+    handleBlockersDeclared() {
+        this.boardState.forEach(card => {
+            if (card.isAttacking) {
+                card.handlers.combat.declareBlockers.forEach(handler => handler.call(card));
+
+                if (card.isBlockedAndDying) {
+                    this.eventsBus.emit('destroy-card', card);
+                }
+
+                if (!card.isBlocked && !card.isBlockedAndDying) {
+                    this.eventsBus.emit('lose-life', card.power);
+                }
+            }
+        });
+
+        // this.game.currentPhase = 'end';
+        this.handleEndStep();
     }
 
     handleEndStep() {
-        this.nonPermanentsPlayed.forEach(card => {
-            this.graveyard.push(card);
+        this.boardState.forEach(card => {
+            card.isAttacking = false;
+            card.isBlocked = false;
+            card.isBlockedAndDying = false;
+
+            card.handlers.combat.end.forEach(handler => handler.call(card));
+            card.handlers.end.forEach(handler => handler.call(card));
         });
 
         this.nonPermanentsPlayed = [];
+
+        // this.game.waitingToStartPlayerTurn = true;
+        this.eventsBus.emit('waiting-to-start-player-turn');
     }
 
     applyCardHandlers (card) {
@@ -95,6 +143,11 @@ export default class Horde extends Opponent {
                             card.abilities.push('First Strike');
                             self.eventsBus.emit('refresh-state');
                         });
+
+                        card.handlers.combat.end.push(function () {
+                            card.abilities = card.abilities.filter(ability => ability !== 'First Strike');
+                            self.eventsBus.emit('refresh-state');
+                        });
                     }
                 });
             });
@@ -109,6 +162,11 @@ export default class Horde extends Opponent {
                     if (card.superTypes.includes('Creature')) {
                         card.handlers.combat.beginning.push(function () {
                             card.damage += 3;
+                            self.eventsBus.emit('refresh-state');
+                        });
+
+                        card.handlers.end.push(function () {
+                            card.damage -= 3;
                             self.eventsBus.emit('refresh-state');
                         });
                     }
@@ -127,6 +185,11 @@ export default class Horde extends Opponent {
                             card.abilities.push('Deathtouch');
                             self.eventsBus.emit('refresh-state');
                         });
+
+                        card.handlers.combat.end.push(function () {
+                            card.abilities = card.abilities.filter(ability => ability !== 'Deathtouch');
+                            self.eventsBus.emit('refresh-state');
+                        });
                     }
                 });
             });
@@ -142,6 +205,11 @@ export default class Horde extends Opponent {
                             card.abilities.push('Menace');
                             self.eventsBus.emit('refresh-state');
                         });
+
+                        card.handlers.combat.end.push(function () {
+                            card.abilities = card.abilities.filter(ability => ability !== 'Menace');
+                            self.eventsBus.emit('refresh-state');
+                        });
                     }
                 });
             });
@@ -152,9 +220,25 @@ export default class Horde extends Opponent {
                 self.castTopSpellOfLibrary();
             });
 
+            let creatures = [];
+
             card.handlers.enterGraveyard.push(function () {
                 // The horde sacrifices two Minotaurs.
+                self.boardState.forEach(card => {
+                    if (card.subTypes.includes('Minotaur')) {
+                        creatures.push(card);
+                    }
+                });
             });
+
+            // sort the toSort array by card.ranking in ascending order
+            creatures.sort(function (a, b) {
+                return a.ranking - b.ranking;
+            });
+
+            // destroy the first two cards in the array
+            if (creatures.length > 0) this.destroyCard(creatures[0]);
+            if (creatures.length > 1) this.destroyCard(creatures[1]);
         }
 
         if (card.name === 'Massacre Totem') {
@@ -164,6 +248,7 @@ export default class Horde extends Opponent {
 
             card.handlers.enterGraveyard.push(function () {
                 // The horde mills 7 cards
+                self.eventsBus.emit('mill-cards', 7);
             });
         }
 
@@ -174,6 +259,7 @@ export default class Horde extends Opponent {
 
             card.handlers.enterGraveyard.push(function () {
                 // Each player draws a card
+                self.alerts('Plundered Statue put into graveyard', 'Each player draws a card', 'info');
             });
         }
 
@@ -195,6 +281,7 @@ export default class Horde extends Opponent {
 
             card.handlers.enterGraveyard.push(function () {
                 // Each player returns a creature card from their graveyard to the battlefield.
+                self.alerts('Vitality Salve put into graveyard', 'Each player returns a creature card from their graveyard to the battlefield', 'info');
             });
         }
     }

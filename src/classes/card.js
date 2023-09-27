@@ -13,8 +13,15 @@ export default class Card {
     toughness = null;
     abilities = [];
     damage = 0;
+    ranking = 0;
+    isBlockedAndDying = false;
+    isBlocked = false;
+
+    minusOneMinusOneCounters = 0;
+    plusOnePlusOneCounters = 0;
 
     eventsBus = null;
+    alerts = null;
 
     permanentCardTypes = [
         'artifact',
@@ -53,7 +60,7 @@ export default class Card {
         tap: [],
     }
 
-    constructor (name, superTypes, subTypes, manaCost, image, power, toughness) {
+    constructor (name, superTypes, subTypes, manaCost, image, power, toughness, ranking) {
         this.name = name;
         this.superTypes = superTypes;
         this.subTypes = subTypes;
@@ -62,14 +69,21 @@ export default class Card {
         this.id = Math.random().toString(36);
         this.power = power;
         this.toughness = toughness;
+        this.ranking = ranking;
 
         this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
+        this.alerts = getCurrentInstance().appContext.config.globalProperties.$swal;
 
         // this.eventsBus.on('tap-card', card => {
         //     if (card && card.id === this.id) {
         //         card.tapped = true;
         //     }
         // });
+    }
+
+    declareAsAttacker() {
+        this.isAttacking = true;
+        this.tapped = true;
     }
 
     cast() {

@@ -5,6 +5,7 @@ export default class PseudoStack {
     opponent = null;
     stack = [];
     eventsBus = null;
+    alerts = null;
 
     autoResolveSpells = true;
 
@@ -12,6 +13,7 @@ export default class PseudoStack {
         this.stack = [];
 
         this.eventsBus = getCurrentInstance().appContext.config.globalProperties.$events;
+        this.alerts = getCurrentInstance().appContext.config.globalProperties.$swal;
 
         this.eventsBus.on('game-started', gameParams => {
             this.game = gameParams.game;
@@ -29,11 +31,7 @@ export default class PseudoStack {
         });
 
         this.eventsBus.on('current-card-resolves', resolves => {
-            if (resolves) {
-                this.resolve();
-            } else {
-                this.counter();
-            }
+            resolves ? this.resolve() : this.counter();
         });
     }
 

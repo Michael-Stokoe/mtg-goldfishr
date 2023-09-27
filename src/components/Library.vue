@@ -61,9 +61,7 @@ export default {
     ],
 
     mounted() {
-        this.$events.on('refresh-state', () => {
-            this.refreshKey++;
-        });
+        this.$events.on('refresh-state', () => this.refreshKey++);
     },
 
     unmounted() {

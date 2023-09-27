@@ -6,7 +6,8 @@
         "subTypes": ["Minotaur"],
         "image": "/img/decks/minotaurs/tbth-1-minotaur-goreseeker.jpg",
         "power": 3,
-        "toughness": 2
+        "toughness": 2,
+        "ranking": 1
     },
     {
         "name": "Minotaur Younghorn",
@@ -15,7 +16,8 @@
         "subTypes": ["Minotaur"],
         "image": "/img/decks/minotaurs/tbth-2-minotaur-younghorn.jpg",
         "power": 2,
-        "toughness": 2
+        "toughness": 2,
+        "ranking": 0
     },
     {
         "name": "Mogis's Chosen",
@@ -24,7 +26,8 @@
         "subTypes": ["Minotaur"],
         "image": "/img/decks/minotaurs/tbth-3-mogis-s-chosen.jpg",
         "power": 5,
-        "toughness": 4
+        "toughness": 4,
+        "ranking": 3
     },
     {
         "name": "Phoberos Reaver",
@@ -33,7 +36,8 @@
         "subTypes": ["Minotaur"],
         "image": "/img/decks/minotaurs/tbth-4-phoberos-reaver.jpg",
         "power": 2,
-        "toughness": 3
+        "toughness": 3,
+        "ranking": 1
     },
     {
         "name": "Reckless Minotaur",
@@ -42,7 +46,8 @@
         "subTypes": ["Minotaur"],
         "image": "/img/decks/minotaurs/tbth-5-reckless-minotaur.jpg",
         "power": 4,
-        "toughness": 1
+        "toughness": 1,
+        "ranking": 2
     },
     {
         "name": "Consuming Rage",
@@ -51,7 +56,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-6-consuming-rage.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Descend on the Prey",
@@ -60,7 +66,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-7-descend-on-the-prey.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Intervention of Keranos",
@@ -69,7 +76,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-8-intervention-of-keranos.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Touch of the Horned God",
@@ -78,7 +86,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-9-touch-of-the-horned-god.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Unquenchable Fury",
@@ -87,7 +96,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-10-unquenchable-fury.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Altar of Mogis",
@@ -96,7 +106,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-11-altar-of-mogis.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Massacre Totem",
@@ -105,7 +116,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-12-massacre-totem.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Plundered Statue",
@@ -114,7 +126,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-13-plundered-statue.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Refreshing Elixir",
@@ -123,7 +136,8 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-14-refreshing-elixir.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     },
     {
         "name": "Vitality Salve",
@@ -132,6 +146,7 @@
         "subTypes": [],
         "image": "/img/decks/minotaurs/tbth-15-vitality-salve.jpg",
         "power": 0,
-        "toughness": 0
+        "toughness": 0,
+        "ranking": 0
     }
 ]
