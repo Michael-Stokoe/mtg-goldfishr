@@ -25,12 +25,12 @@
                             <i class="w-6 fa-solid fa-arrow-rotate-left"></i> <span>Remove from Combat</span>
                         </p>
 
-                        <p v-if="showBlockOptions"
+                        <p @click="block" v-if="showBlockOptions"
                             class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
                             <i class="w-6 fa-solid fa-shield"></i> <span>Block</span>
                         </p>
 
-                        <p v-if="showBlockOptions"
+                        <p @click="lethalBlock" v-if="showBlockOptions"
                             class="px-4 text-lg text-gray-300 cursor-pointer hover:text-white hover:bg-gray-800">
                             <i class="w-6 fa-solid fa-shield-virus"></i> <span>Lethal Block</span>
                         </p>
@@ -58,6 +58,12 @@
                 <div v-if="showAbilities"
                     class="absolute flex flex-col px-2 py-1 space-x-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 left-3 rounded-xl">
                     <span v-for="ability in abilities" :key="ability">{{ ability }}</span>
+                </div>
+
+                <div v-if="showBlocked"
+                    class="absolute flex flex-col px-2 py-1 space-x-1 text-xs text-gray-900 -translate-y-1/2 bg-gray-200 top-1/2 right-3 rounded-xl">
+                    <span v-if="card.isBlocked">Blocked</span>
+                    <span v-if="card.isBlockedAndDying">Lethal Blocked</span>
                 </div>
 
                 <div v-if="showPowerToughness"
@@ -91,8 +97,7 @@ export default {
     computed: {
         showBlockOptions() {
             if (this.card.superTypes.includes('Creature')) {
-                // Get current phase. If we're not at declaration of blockers, don't show options.
-                return 1;
+                return this.card.isAttacking;
             }
 
             return false;
@@ -125,6 +130,10 @@ export default {
             }
 
             return [];
+        },
+
+        showBlocked() {
+            return this.card.isBlocked || this.card.isBlockedAndDying;
         }
     },
 
@@ -148,6 +157,20 @@ export default {
         removeFromCombat() {
             this.card.isAttacking = false;
             this.card.tapped = false;
+        },
+
+        block() {
+            if (this.card.isBlockedAndDying) {
+                this.card.isBlockedAndDying = false;
+            }
+            this.card.isBlocked = !this.card.isBlocked;
+        },
+
+        lethalBlock() {
+            if (this.card.isBlocked) {
+                this.card.isBlocked = false;
+            }
+            this.card.isBlockedAndDying = !this.card.isBlockedAndDying;
         }
     }
 }
