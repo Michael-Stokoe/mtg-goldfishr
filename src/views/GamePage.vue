@@ -73,13 +73,6 @@
                         </div>
                     </div>
 
-                    <pseudo-stack :game="gameObject" />
-
-                    <div v-if="nonPermanentsPlayed.length" class="py-6 mx-6">
-                        <non-permanents-played :nonPermanents="nonPermanentsPlayed" />
-                    </div>
-
-
                     <div v-if="showMoveToCombatButton" class="flex flex-col justify-center space-y-2 text-center">
                         <p>The opponent would now like to move to combat, start opponent's combat phase?</p>
                         <div>
@@ -100,6 +93,12 @@
                         <div>
                             <btn :label="'Start Your Turn'" @click="startPlayerTurn" />
                         </div>
+                    </div>
+
+                    <pseudo-stack :game="gameObject" />
+
+                    <div v-if="nonPermanentsPlayed.length" class="py-6 mx-6">
+                        <non-permanents-played :nonPermanents="nonPermanentsPlayed" />
                     </div>
 
                     <board-state v-if="gameStarted" :game="gameObject" />

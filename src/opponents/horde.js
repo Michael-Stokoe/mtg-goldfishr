@@ -42,6 +42,7 @@ export default class Horde extends Opponent {
     handleCombat() {
         this.nonPermanentsPlayed.forEach(card => {
             card.handlers.combat.beginning.forEach(handler => handler.call());
+            card.handlers.combat.declareAttackers.forEach(handler => handler.call());
         });
 
         // declare attackers
@@ -50,8 +51,8 @@ export default class Horde extends Opponent {
                 if (!card.tapped) {
                     card.declareAsAttacker();
 
-                    card.handlers.combat.declareAttackers.forEach(handler => handler.call());
                     card.handlers.combat.beginning.forEach(handler => handler.call());
+                    card.handlers.combat.declareAttackers.forEach(handler => handler.call());
                 }
             }
         });
@@ -85,6 +86,11 @@ export default class Horde extends Opponent {
             card.handlers.combat.end.forEach(handler => handler.call());
         });
 
+        let cardsToDestroy = this.boardState.filter(card => card.destroyAfterCombat).map(card => card.id);
+        cardsToDestroy.forEach(id => {
+            this.destroyCard(this.boardState.find(card => card.id === id));
+        });
+
         // this.game.currentPhase = 'end';
         this.eventsBus.emit('set-phase', 'end');
         this.eventsBus.emit('refresh-state');
@@ -97,7 +103,6 @@ export default class Horde extends Opponent {
             card.isBlocked = false;
             card.isBlockedAndDying = false;
 
-            card.handlers.combat.end.forEach(handler => handler.call());
             card.handlers.end.forEach(handler => handler.call());
         });
 
@@ -129,14 +134,10 @@ export default class Horde extends Opponent {
                 // destroy that creature at the end of combat.
 
                 self.boardState.forEach(card => {
-                    if (card.superTypes.includes('Creature') && card.subTypes.includes('Minotaur') && card.isAttacking) {
+                    if (card.superTypes.includes('Creature')) {
                         card.power += 2;
-
-                        card.handlers.combat.end.push(function () {
-                            card.power -= 2;
-
-                            self.destroyCard(card, false);
-                        });
+                        card.destroyAfterCombat = true;
+                        self.eventsBus.emit('refresh-state');
                     }
                 });
             });

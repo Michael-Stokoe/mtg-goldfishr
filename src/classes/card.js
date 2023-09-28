@@ -16,6 +16,7 @@ export default class Card {
     ranking = 0;
     isBlockedAndDying = false;
     isBlocked = false;
+    destroyAfterCombat = false;
 
     minusOneMinusOneCounters = 0;
     plusOnePlusOneCounters = 0;
